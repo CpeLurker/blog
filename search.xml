@@ -1,23 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Hello World</title>
-    <url>/blog/2021/01/06/hello-world/</url>
-    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-]]></content>
-  </entry>
-  <entry>
     <title>OOB之DNS隧道利用</title>
-    <url>/blog/2021/01/06/OOB%E4%B9%8BDNS%E9%9A%A7%E9%81%93%E5%88%A9%E7%94%A8/</url>
-    <content><![CDATA[<h1 id="相关背景"><a href="#相关背景" class="headerlink" title="相关背景"></a>相关背景</h1><h2 id="1-什么是OOB"><a href="#1-什么是OOB" class="headerlink" title="1. 什么是OOB"></a>1. 什么是OOB</h2><p>OOB即，带外通道技术。<br>在对于注入中，存在无回显的情况，这时候通常使用Blind SQL进行猜解，利用这种方式获取信息，比较麻烦，并且容易因为频繁的数据请求导致ip被BAN。<br>OOB通过另一种方式来确认和利用盲注漏洞带外通道技术通常需要脆弱的实体来生成带外的TCP/UDP/ICMP请求，然后，攻击者可以通过这个请求来提取数据。一次OOB攻击能够成功逃避监控，绕过防火墙且能更好的隐藏自己。<br>常见的方式是HTTP、ICMP、DNS，ICMP隧道一般会进行防御，TCP在甲方中会有严格的防火墙控制端口，HTTP在甲方中一般也会有严格且完整的监控和阻断机制，DNS隧道在当前环境下，由于需要解析，不会对其进行拦截。利用访问域名，携带信息。<br>所以可以将select到的数据发送给一个url，利用dns解析产生的记录日志来查看数据。</p>
+    <url>/blog/2021/01/07/OOB%E4%B9%8BDNS%E9%9A%A7%E9%81%93%E5%88%A9%E7%94%A8/</url>
+    <content><![CDATA[<p>​    在对于注入中，存在无回显的情况，这时候通常使用Blind SQL进行猜解，利用这种方式获取信息，比较麻烦，并且容易因为频繁的数据请求导致ip被BAN。<br>​    OOB通过另一种方式来确认和利用盲注漏洞带外通道技术通常需要脆弱的实体来生成带外的TCP/UDP/ICMP请求，然后，攻击者可以通过这个请求来提取数据。一次OOB攻击能够成功逃避监控，绕过防火墙且能更好的隐藏自己。</p>
+<a id="more"></a>
+
+<h1 id="相关背景"><a href="#相关背景" class="headerlink" title="相关背景"></a>相关背景</h1><h2 id="1-什么是OOB"><a href="#1-什么是OOB" class="headerlink" title="1. 什么是OOB"></a>1. 什么是OOB</h2><p>OOB即，带外通道技术。<br>在对于注入中，存在无回显的情况，这时候通常使用Blind SQL进行猜解，利用这种方式获取信息，比较麻烦，并且容易因为频繁的数据请求导致ip被BAN。<br>OOB通过另一种方式来确认和利用盲注漏洞带外通道技术通常需要脆弱的实体来生成带外的TCP/UDP/ICMP请求，然后，攻击者可以通过这个请求来提取数据。一次OOB攻击能够成功逃避监控，绕过防火墙且能更好的隐藏自己。<br>常见的方式是HTTP、ICMP、DNS，ICMP隧道一般会进行防御，TCP在甲方中会有严格的防火墙控制端口，HTTP在甲方中一般也会有严格且完整的监控和阻断机制，DNS隧道在当前环境下，由于需要解析，不会对其进行拦截。利用访问域名，携带信息。<br>所以可以将select到的数据发送给一个url，利用dns解析产生的记录日志来查看数据。</p>
 <h2 id="2-DNSLOG"><a href="#2-DNSLOG" class="headerlink" title="2. DNSLOG"></a>2. DNSLOG</h2><p>Dnslog就是存储在DNS Server上的域名信息，它记录着用户对域名<a href="http://www.test.com、t00ls.com.等的访问信息./">www.test.com、t00ls.com.等的访问信息。</a><br><img src="https://img-blog.csdnimg.cn/20210106155146376.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="DNS查询原理图"></p>
 <blockquote>
 <p><strong>PS：好久以前的笔记了，这张图片忘了出处了，如有冒犯，侵删，抱歉。</strong></p>
@@ -84,55 +73,27 @@
       </categories>
   </entry>
   <entry>
-    <title>双系统 Win10下安装Linux（单/双硬盘）</title>
-    <url>/blog/2021/01/20/%E5%8F%8C%E7%B3%BB%E7%BB%9F%20Win10%E4%B8%8B%E5%AE%89%E8%A3%85Linux%EF%BC%88%E5%8D%95_%E5%8F%8C%E7%A1%AC%E7%9B%98%EF%BC%89/</url>
-    <content><![CDATA[<h1 id="单硬盘"><a href="#单硬盘" class="headerlink" title="单硬盘"></a>单硬盘</h1><p>出于一些学习需要，笔者需要安装双系统。典型的<strong>Windows+Linux</strong>的双系统组合。<br>这里笔者在Win10环境下安装Linux系统。<br>采用了Centos和Ubuntu两种Linux系统发行版本。<br>分别尝试了 种机型<br><code>Acer-Aspire V15、MI Pro、HP 暗影精灵II、Lenovo IDEALPad等</code></p>
-<a id="more"></a>
-
-<h2 id="Centos"><a href="#Centos" class="headerlink" title="Centos"></a>Centos</h2><p>准备<kbd>Centos7 iso镜像</kbd>.<br>官网：<br><a href="https://www.centos.org/download/">https://www.centos.org/download/</a><br>阿里源：<br><a href="http://mirrors.aliyun.com/centos/7/isos/x86_64/">http://mirrors.aliyun.com/centos/7/isos/x86_64/ </a><br>首先，准备一个U盘作为系统引导。<br>可以利用UltraISO(<a href="https://ultraiso.en.softonic.com/">https://ultraiso.en.softonic.com/</a>)工具制作引导盘。<br>使用方法：<br><img src="https://img-blog.csdnimg.cn/2019091214021332.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="Alt"><br>点击继续试用;<br><img src="https://img-blog.csdnimg.cn/20190912140445964.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>选中文件，打开镜像所在目录，选中镜像;<br><img src="https://img-blog.csdnimg.cn/20190912142702178.png#pic_center" alt="在这里插入图片描述"><br>然后点击启动项，选择写入硬盘映像。其余默认即可。<br><code>Tip:U盘数据会被清空！</code><br>安装前需要进行的准备工作，详见下文Ubuntu中。<br>这边主要针对可能会出现的==invalid pointer==错误提示，提出解决方案。<br>因为路径识别的问题，完整的Centos镜像文件名与U盘名不匹配（这边没有进行深入探究，似乎U盘名称长度受限，一般只能显示到x8处）<br><strong>解决方案</strong>：<br>    <img src="https://img-blog.csdnimg.cn/20190912141901615.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center=40x40" alt="在这里插入图片描述">由于当时没有拍照，图源自他处，选择在Install Centos项，按下e。<br>将<code>“linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=CentOS\x207\x20x86_64 quiet”</code><br>改为<br><code> linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=CentOS\x207\x20x8 quiet</code><br>否则将安装失败。</p>
-<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>安装过程中分别尝试了<kbd>Ubuntu 14.04</kbd> 与 <kbd>Ubuntu 18.04</kbd><br>这边推荐新手安装较高的版本的Ubuntu（原因见下文），但一般出于稳定性的考虑不会使用最新版本，可以使用笔者采用的18.04版本。</p>
-<h3 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h3><p>准备镜像资源<br>官方：<a href="https://ubuntu.com/download">https://ubuntu.com/download</a><br>阿里源：<a href="http://mirrors.aliyun.com/ubuntu-releases/">http://mirrors.aliyun.com/ubuntu-releases</a><br>1.制作U盘引导<br>见上文<code>Centos</code>；</p>
-<p>2.划出安装区<br><img src="https://img-blog.csdnimg.cn/20190912151609516.png#pic_center" alt="在这里插入图片描述"><br>鼠标右击“此电脑”，选中管理；<br><img src="https://img-blog.csdnimg.cn/2019091215173668.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>打开磁盘管理，点击想要进行划分的磁盘；<br><img src="https://img-blog.csdnimg.cn/20190912152027325.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>压缩卷；<br><img src="https://img-blog.csdnimg.cn/20190912152130603.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>确保磁盘未使用空间足够的情况下，填入期望划分出的空闲区的大小，笔者划分了80G；<br><img src="https://img-blog.csdnimg.cn/20190912152232924.png#pic_center" alt="在这里插入图片描述"><br>最后会显示一个黑色区域，不要进行建卷操作，我们需要的是一个无格式的分区。</p>
-<p>3.关闭快速启动<br><img src="https://img-blog.csdnimg.cn/20190912144600275.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>打开”电源和睡眠设置“；</p>
-<p><img src="https://img-blog.csdnimg.cn/20190912144647264.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center=50x50" alt="在这里插入图片描述"><br>选择“其他电源设置”；<br><img src="https://img-blog.csdnimg.cn/20190912144738365.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>点击“选择电源按钮的功能”；<br><img src="https://img-blog.csdnimg.cn/2019091214490156.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>点击==更改当前不可用的设置==，勾去==启用快速启动==；</p>
-<p>4.确认UEFI模式</p>
-<blockquote>
-<p>UEFI引导的流程是开机初始化UEFI，然后，直接引导操作系统，进入系统。和传统的BIOS引导相比，UEFI引导少了一道BIOS自检的过程。</p>
-</blockquote>
-<p>见下图，Boot-&gt;Boot Mode</p>
-<p>5.关闭Secure Boot。<br>Secure Boot<br>即安全启动项。</p>
-<blockquote>
-<p>Secure BOOT设计之初作用是防止恶意软件侵入。事实上它能够做到的仅仅是，当电脑引导器被病毒修改之后，它会给出提醒并拒绝启动，避免可能带来的进一步损失。</p>
-</blockquote>
-<p>如果将安全启动项开始，系统会默认引导Windows系统，其他系统系统将无法启动。<br>方法：<br>1.进入BIOS界面（一般是F2或者Fn + F2）；<br>2.选择BOOT项，找到Secure Boot 将其改为 disabled。<br><img src="https://img-blog.csdnimg.cn/20190912145318544.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>6.改变引导优先级<br>见上图，选中USB设备将其放置最上方。（即改变value，一般在bios的下方会有介绍，通常是F6）。<br>到这里准备工作基本完毕。</p>
-<h3 id="正式安装Ubuntu系统"><a href="#正式安装Ubuntu系统" class="headerlink" title="正式安装Ubuntu系统"></a>正式安装Ubuntu系统</h3><p><strong>关于分区</strong>：<br>(50G为例)<br>/boot    逻辑分区        400MB（400MB足够，可通用）；<br>/            主分区            20000MB；<br>swap    逻辑分区        8000MB(参照主机内存，一般不超过，笔者是8G内存)；<br>/home    逻辑分区        剩余所有空间，可以放置个人文档、数据。</p>
-<p>由于图片拍摄不便，po百度百科和其他博主图片。<br>图片取自：Windows + Ubuntu 16.04 双系统安装详细教程<br> 链接：<a href="https://blog.csdn.net/flyyufenfei/article/details/79187656">https://blog.csdn.net/flyyufenfei/article/details/79187656</a>（如有侵权，会立即删除，告谢）<br><img src="https://img-blog.csdnimg.cn/20190912150518350.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20190912150639447.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>ubuntu18的界面与这有些不同，但操作类似。<br><img src="https://img-blog.csdnimg.cn/20190912150753225.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>这边可以两个都不用勾选。<br><img src="https://img-blog.csdnimg.cn/20190912150836287.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>一般会提示你已经安装Windows系统或其他系统，一定注意选择==其他选项==，选择默认项将会导致格盘，造成已安装系统丢失。<br><img src="https://img-blog.csdnimg.cn/20190912151022494.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>找到之前划出的空闲区，采取分区方案分区。<br>要注意的是，==安装启动引导的设备要选择/boot分区对应的标号==。<br>这边不做赘述。</p>
-<h2 id="踩坑"><a href="#踩坑" class="headerlink" title="踩坑"></a>踩坑</h2><p>笔者分别对六台不同型号的笔记本进行了双系统安装；<br>这里分享一些可能遇到的问题以及解决方案；</p>
-<p><strong>a.安装完Ubuntu后，重启直接进入Windos系统</strong></p>
-<p><strong>解决方案：</strong></p>
-<p>重新启动，进入BIOS界面，在启动优先级处将Ubuntu系统放置在第一位，这样可以进入Ubuntu系统；<br>或者，在Windos系统下引导菜单；<br><img src="https://img-blog.csdnimg.cn/20190912153328303.png#pic_center" alt="在这里插入图片描述"><br>打开“此电脑”属性；<br><img src="https://img-blog.csdnimg.cn/20190912153413295.png#pic_center" alt="在这里插入图片描述"><br>点击“高级系统设置”；<br><img src="https://img-blog.csdnimg.cn/2019091215350315.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>设置“启动和故障恢复”，点击“设置”；<br><img src="https://img-blog.csdnimg.cn/20190912153556974.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>勾选“显示操作系统列表的时间”，默认30s即可；<br>这样重启后，会发现出现系统引导菜单，可以进行系统选择；</p>
-<p><strong>b.BIOS下找不到Ubuntu系统</strong></p>
-<p><strong>解决方案：</strong></p>
-<p>重启，进入BooT Menu（一般为F12），查看是否有Ubuntu系统引导；</p>
-<p><strong>c.Ubuntu14 无线网卡问题</strong></p>
-<p><strong>解决方案:</strong></p>
-<p>这就是上文推荐安装Ubuntu18的原因了，在Ubuntu14种无线网卡驱动存在问题，需要先进行有线连接更新驱动，但对于小米用户（出于轻便设计考虑，去掉了宽带口）似乎不可行，但在Ubuntu18上无线网卡驱动是正常的，可以像Windows端一样轻松搜索Wifi。</p>
-<p><strong>d.Ubuntu /boot引导问题</strong></p>
-<p><strong>解决方案：</strong></p>
-<p>我在为朋友的一台较新的笔记本安装双系统时，对空闲区进行分区，采用/boot引导会提示不可行，这时候需要采用efi格式，即将”ext4…”一栏下拉，选择efi即可，引导分区选择efi分区对应标号。</p>
-<p><strong>e. Ubuntu 引导无法被识别</strong></p>
-<p><strong>解决方案:</strong></p>
-<p>这是笔者在安装过程中碰到最困惑的一个问题，笔记本是较老的型号预留有光驱位（放盘），尝试了各种姿势安装Ubuntu14都无法找到引导；<br>经过一系列尝试，终于找到了一个能进入Ubuntu的姿势；<br>首先需要将固态盘放置在笔记本内，而不是光驱位，让BIOS能读取到固态硬盘。因为这样的笔记本在BIOS中只会读取到一个磁盘，即放置在内部的（很奇怪）；<br>将Ubuntu18（Ubuntu14无用）系统装在固态盘即系统盘上，这时候还是无法找到引导；<br>利用工具easyBCD添加引导grub2，自动加载即可，按照上文打开引导列表，重启会发现一个Linux系统引导，Enter进入，会提示“请插入Windows光盘…”这是正常的，这时候按下Escape（Esc）,会发现显示一个固态盘的分区界面（Boot Option Menu）。<br><img src="https://img-blog.csdnimg.cn/20190912161440852.png#pic_center" alt="在这里插入图片描述"><br>因为我们只安装了两个系统，并且都在固态盘上，显然这个不知名设备正是我们的Ubuntu系统，选择进入，成功进入Ubuntu。</p>
-<h1 id="双硬盘"><a href="#双硬盘" class="headerlink" title="双硬盘"></a>双硬盘</h1><p>双硬盘安装即固械混合安装系统，是将Ubuntu系统的引导分区\boot存放在固态硬盘（系统盘C盘），其他分区放置在机械硬盘（数据盘）。<br>所以，操作与单硬盘基本类似，不同在于，我们需要在系统盘上划出400MB以上的空闲区作为引导分区。<br>可参考：<br><a href="https://blog.csdn.net/m0_37857300/article/details/78930773">https://blog.csdn.net/m0_37857300/article/details/78930773</a></p>
+    <title>Hello World</title>
+    <url>/blog/2021/01/06/hello-world/</url>
+    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
 ]]></content>
-      <categories>
-        <category>杂记</category>
-      </categories>
   </entry>
   <entry>
     <title>机器学习——分类问题</title>
     <url>/blog/2021/01/20/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E2%80%94%E2%80%94%E5%88%86%E7%B1%BB%E9%97%AE%E9%A2%98/</url>
-    <content><![CDATA[<h1 id="机器学习——分类问题"><a href="#机器学习——分类问题" class="headerlink" title="机器学习——分类问题"></a>机器学习——分类问题</h1><h2 id="KNN-K近邻算法"><a href="#KNN-K近邻算法" class="headerlink" title="KNN K近邻算法"></a>KNN K近邻算法</h2><h3 id="一般步骤："><a href="#一般步骤：" class="headerlink" title="一般步骤："></a>一般步骤：</h3><ol>
+    <content><![CDATA[<p>​    近期，准备通过机器学习来进行恶意代码的分检，需要学习相关知识，故做了一些机器学习的笔记。</p>
+<p>​    首先明确了这是一个典型的二分类问题，分为Malicious(恶意)和Benign(良性)两类。通过分类算法对选取的特征向量进行训练测试，实现对恶意软件和良性软件的区分。</p>
+<a id="more"></a>
+
+<h1 id="机器学习——分类问题"><a href="#机器学习——分类问题" class="headerlink" title="机器学习——分类问题"></a>机器学习——分类问题</h1><h2 id="KNN-K近邻算法"><a href="#KNN-K近邻算法" class="headerlink" title="KNN K近邻算法"></a>KNN K近邻算法</h2><h3 id="一般步骤："><a href="#一般步骤：" class="headerlink" title="一般步骤："></a>一般步骤：</h3><ol>
 <li><p>计算距离</p>
 <p>欧式距离</p>
 </li>
@@ -409,6 +370,52 @@
 ]]></content>
       <categories>
         <category>机器学习</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>双系统 Win10下安装Linux（单/双硬盘）</title>
+    <url>/blog/2021/01/20/%E5%8F%8C%E7%B3%BB%E7%BB%9F%20Win10%E4%B8%8B%E5%AE%89%E8%A3%85Linux%EF%BC%88%E5%8D%95_%E5%8F%8C%E7%A1%AC%E7%9B%98%EF%BC%89/</url>
+    <content><![CDATA[<h1 id="单硬盘"><a href="#单硬盘" class="headerlink" title="单硬盘"></a>单硬盘</h1><p>出于一些学习需要，笔者需要安装双系统。典型的<strong>Windows+Linux</strong>的双系统组合。<br>这里笔者在Win10环境下安装Linux系统。<br>采用了Centos和Ubuntu两种Linux系统发行版本。<br>分别尝试了 种机型<br><code>Acer-Aspire V15、MI Pro、HP 暗影精灵II、Lenovo IDEALPad等</code></p>
+<a id="more"></a>
+
+<h2 id="Centos"><a href="#Centos" class="headerlink" title="Centos"></a>Centos</h2><p>准备<kbd>Centos7 iso镜像</kbd>.<br>官网：<br><a href="https://www.centos.org/download/">https://www.centos.org/download/</a><br>阿里源：<br><a href="http://mirrors.aliyun.com/centos/7/isos/x86_64/">http://mirrors.aliyun.com/centos/7/isos/x86_64/ </a><br>首先，准备一个U盘作为系统引导。<br>可以利用UltraISO(<a href="https://ultraiso.en.softonic.com/">https://ultraiso.en.softonic.com/</a>)工具制作引导盘。<br>使用方法：<br><img src="https://img-blog.csdnimg.cn/2019091214021332.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="Alt"><br>点击继续试用;<br><img src="https://img-blog.csdnimg.cn/20190912140445964.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>选中文件，打开镜像所在目录，选中镜像;<br><img src="https://img-blog.csdnimg.cn/20190912142702178.png#pic_center" alt="在这里插入图片描述"><br>然后点击启动项，选择写入硬盘映像。其余默认即可。<br><code>Tip:U盘数据会被清空！</code><br>安装前需要进行的准备工作，详见下文Ubuntu中。<br>这边主要针对可能会出现的==invalid pointer==错误提示，提出解决方案。<br>因为路径识别的问题，完整的Centos镜像文件名与U盘名不匹配（这边没有进行深入探究，似乎U盘名称长度受限，一般只能显示到x8处）<br><strong>解决方案</strong>：<br>    <img src="https://img-blog.csdnimg.cn/20190912141901615.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center=40x40" alt="在这里插入图片描述">由于当时没有拍照，图源自他处，选择在Install Centos项，按下e。<br>将<code>“linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=CentOS\x207\x20x86_64 quiet”</code><br>改为<br><code> linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=CentOS\x207\x20x8 quiet</code><br>否则将安装失败。</p>
+<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>安装过程中分别尝试了<kbd>Ubuntu 14.04</kbd> 与 <kbd>Ubuntu 18.04</kbd><br>这边推荐新手安装较高的版本的Ubuntu（原因见下文），但一般出于稳定性的考虑不会使用最新版本，可以使用笔者采用的18.04版本。</p>
+<h3 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h3><p>准备镜像资源<br>官方：<a href="https://ubuntu.com/download">https://ubuntu.com/download</a><br>阿里源：<a href="http://mirrors.aliyun.com/ubuntu-releases/">http://mirrors.aliyun.com/ubuntu-releases</a><br>1.制作U盘引导<br>见上文<code>Centos</code>；</p>
+<p>2.划出安装区<br><img src="https://img-blog.csdnimg.cn/20190912151609516.png#pic_center" alt="在这里插入图片描述"><br>鼠标右击“此电脑”，选中管理；<br><img src="https://img-blog.csdnimg.cn/2019091215173668.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>打开磁盘管理，点击想要进行划分的磁盘；<br><img src="https://img-blog.csdnimg.cn/20190912152027325.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>压缩卷；<br><img src="https://img-blog.csdnimg.cn/20190912152130603.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>确保磁盘未使用空间足够的情况下，填入期望划分出的空闲区的大小，笔者划分了80G；<br><img src="https://img-blog.csdnimg.cn/20190912152232924.png#pic_center" alt="在这里插入图片描述"><br>最后会显示一个黑色区域，不要进行建卷操作，我们需要的是一个无格式的分区。</p>
+<p>3.关闭快速启动<br><img src="https://img-blog.csdnimg.cn/20190912144600275.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>打开”电源和睡眠设置“；</p>
+<p><img src="https://img-blog.csdnimg.cn/20190912144647264.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center=50x50" alt="在这里插入图片描述"><br>选择“其他电源设置”；<br><img src="https://img-blog.csdnimg.cn/20190912144738365.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>点击“选择电源按钮的功能”；<br><img src="https://img-blog.csdnimg.cn/2019091214490156.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>点击==更改当前不可用的设置==，勾去==启用快速启动==；</p>
+<p>4.确认UEFI模式</p>
+<blockquote>
+<p>UEFI引导的流程是开机初始化UEFI，然后，直接引导操作系统，进入系统。和传统的BIOS引导相比，UEFI引导少了一道BIOS自检的过程。</p>
+</blockquote>
+<p>见下图，Boot-&gt;Boot Mode</p>
+<p>5.关闭Secure Boot。<br>Secure Boot<br>即安全启动项。</p>
+<blockquote>
+<p>Secure BOOT设计之初作用是防止恶意软件侵入。事实上它能够做到的仅仅是，当电脑引导器被病毒修改之后，它会给出提醒并拒绝启动，避免可能带来的进一步损失。</p>
+</blockquote>
+<p>如果将安全启动项开始，系统会默认引导Windows系统，其他系统系统将无法启动。<br>方法：<br>1.进入BIOS界面（一般是F2或者Fn + F2）；<br>2.选择BOOT项，找到Secure Boot 将其改为 disabled。<br><img src="https://img-blog.csdnimg.cn/20190912145318544.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>6.改变引导优先级<br>见上图，选中USB设备将其放置最上方。（即改变value，一般在bios的下方会有介绍，通常是F6）。<br>到这里准备工作基本完毕。</p>
+<h3 id="正式安装Ubuntu系统"><a href="#正式安装Ubuntu系统" class="headerlink" title="正式安装Ubuntu系统"></a>正式安装Ubuntu系统</h3><p><strong>关于分区</strong>：<br>(50G为例)<br>/boot    逻辑分区        400MB（400MB足够，可通用）；<br>/            主分区            20000MB；<br>swap    逻辑分区        8000MB(参照主机内存，一般不超过，笔者是8G内存)；<br>/home    逻辑分区        剩余所有空间，可以放置个人文档、数据。</p>
+<p>由于图片拍摄不便，po百度百科和其他博主图片。<br>图片取自：Windows + Ubuntu 16.04 双系统安装详细教程<br> 链接：<a href="https://blog.csdn.net/flyyufenfei/article/details/79187656">https://blog.csdn.net/flyyufenfei/article/details/79187656</a>（如有侵权，会立即删除，告谢）<br><img src="https://img-blog.csdnimg.cn/20190912150518350.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20190912150639447.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>ubuntu18的界面与这有些不同，但操作类似。<br><img src="https://img-blog.csdnimg.cn/20190912150753225.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>这边可以两个都不用勾选。<br><img src="https://img-blog.csdnimg.cn/20190912150836287.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>一般会提示你已经安装Windows系统或其他系统，一定注意选择==其他选项==，选择默认项将会导致格盘，造成已安装系统丢失。<br><img src="https://img-blog.csdnimg.cn/20190912151022494.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>找到之前划出的空闲区，采取分区方案分区。<br>要注意的是，==安装启动引导的设备要选择/boot分区对应的标号==。<br>这边不做赘述。</p>
+<h2 id="踩坑"><a href="#踩坑" class="headerlink" title="踩坑"></a>踩坑</h2><p>笔者分别对六台不同型号的笔记本进行了双系统安装；<br>这里分享一些可能遇到的问题以及解决方案；</p>
+<p><strong>a.安装完Ubuntu后，重启直接进入Windos系统</strong></p>
+<p><strong>解决方案：</strong></p>
+<p>重新启动，进入BIOS界面，在启动优先级处将Ubuntu系统放置在第一位，这样可以进入Ubuntu系统；<br>或者，在Windos系统下引导菜单；<br><img src="https://img-blog.csdnimg.cn/20190912153328303.png#pic_center" alt="在这里插入图片描述"><br>打开“此电脑”属性；<br><img src="https://img-blog.csdnimg.cn/20190912153413295.png#pic_center" alt="在这里插入图片描述"><br>点击“高级系统设置”；<br><img src="https://img-blog.csdnimg.cn/2019091215350315.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>设置“启动和故障恢复”，点击“设置”；<br><img src="https://img-blog.csdnimg.cn/20190912153556974.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>勾选“显示操作系统列表的时间”，默认30s即可；<br>这样重启后，会发现出现系统引导菜单，可以进行系统选择；</p>
+<p><strong>b.BIOS下找不到Ubuntu系统</strong></p>
+<p><strong>解决方案：</strong></p>
+<p>重启，进入BooT Menu（一般为F12），查看是否有Ubuntu系统引导；</p>
+<p><strong>c.Ubuntu14 无线网卡问题</strong></p>
+<p><strong>解决方案:</strong></p>
+<p>这就是上文推荐安装Ubuntu18的原因了，在Ubuntu14种无线网卡驱动存在问题，需要先进行有线连接更新驱动，但对于小米用户（出于轻便设计考虑，去掉了宽带口）似乎不可行，但在Ubuntu18上无线网卡驱动是正常的，可以像Windows端一样轻松搜索Wifi。</p>
+<p><strong>d.Ubuntu /boot引导问题</strong></p>
+<p><strong>解决方案：</strong></p>
+<p>我在为朋友的一台较新的笔记本安装双系统时，对空闲区进行分区，采用/boot引导会提示不可行，这时候需要采用efi格式，即将”ext4…”一栏下拉，选择efi即可，引导分区选择efi分区对应标号。</p>
+<p><strong>e. Ubuntu 引导无法被识别</strong></p>
+<p><strong>解决方案:</strong></p>
+<p>这是笔者在安装过程中碰到最困惑的一个问题，笔记本是较老的型号预留有光驱位（放盘），尝试了各种姿势安装Ubuntu14都无法找到引导；<br>经过一系列尝试，终于找到了一个能进入Ubuntu的姿势；<br>首先需要将固态盘放置在笔记本内，而不是光驱位，让BIOS能读取到固态硬盘。因为这样的笔记本在BIOS中只会读取到一个磁盘，即放置在内部的（很奇怪）；<br>将Ubuntu18（Ubuntu14无用）系统装在固态盘即系统盘上，这时候还是无法找到引导；<br>利用工具easyBCD添加引导grub2，自动加载即可，按照上文打开引导列表，重启会发现一个Linux系统引导，Enter进入，会提示“请插入Windows光盘…”这是正常的，这时候按下Escape（Esc）,会发现显示一个固态盘的分区界面（Boot Option Menu）。<br><img src="https://img-blog.csdnimg.cn/20190912161440852.png#pic_center" alt="在这里插入图片描述"><br>因为我们只安装了两个系统，并且都在固态盘上，显然这个不知名设备正是我们的Ubuntu系统，选择进入，成功进入Ubuntu。</p>
+<h1 id="双硬盘"><a href="#双硬盘" class="headerlink" title="双硬盘"></a>双硬盘</h1><p>双硬盘安装即固械混合安装系统，是将Ubuntu系统的引导分区\boot存放在固态硬盘（系统盘C盘），其他分区放置在机械硬盘（数据盘）。<br>所以，操作与单硬盘基本类似，不同在于，我们需要在系统盘上划出400MB以上的空闲区作为引导分区。<br>可参考：<br><a href="https://blog.csdn.net/m0_37857300/article/details/78930773">https://blog.csdn.net/m0_37857300/article/details/78930773</a></p>
+]]></content>
+      <categories>
+        <category>杂记</category>
       </categories>
   </entry>
 </search>
