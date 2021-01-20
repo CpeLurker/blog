@@ -15,14 +15,6 @@
 ]]></content>
   </entry>
   <entry>
-    <title>R</title>
-    <url>/blog/2021/01/20/%E6%9D%82%E8%AE%B0/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>SQL</category>
-      </categories>
-  </entry>
-  <entry>
     <title>机器学习——分类问题</title>
     <url>/blog/2021/01/20/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E2%80%94%E2%80%94%E5%88%86%E7%B1%BB%E9%97%AE%E9%A2%98/</url>
     <content><![CDATA[<h1 id="机器学习——分类问题"><a href="#机器学习——分类问题" class="headerlink" title="机器学习——分类问题"></a>机器学习——分类问题</h1><h2 id="KNN-K近邻算法"><a href="#KNN-K近邻算法" class="headerlink" title="KNN K近邻算法"></a>KNN K近邻算法</h2><h3 id="一般步骤："><a href="#一般步骤：" class="headerlink" title="一般步骤："></a>一般步骤：</h3><ol>
@@ -302,6 +294,14 @@
 ]]></content>
       <categories>
         <category>机器学习</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>R</title>
+    <url>/blog/2021/01/20/%E6%9D%82%E8%AE%B0/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>SQL</category>
       </categories>
   </entry>
 </search>
